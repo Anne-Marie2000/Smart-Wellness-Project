@@ -38,7 +38,7 @@
         </dependency>
 
         <!-- scrambles (hashes) passwords so we never save the real password.
-             Used in: PasswordUtil.java.g -->
+             Used in: PasswordUtil.java -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
