@@ -1,10 +1,10 @@
-<!-- Maven settings: lists the libraries our backend uses. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.smartwellness</groupId>
     <artifactId>smart-wellness-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    
+    <!-- Maven settings: lists the libraries our backend uses. -->
     <!-- General settings -->
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
