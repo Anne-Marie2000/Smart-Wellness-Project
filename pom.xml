@@ -1,4 +1,4 @@
-<!-- Maven settings: lists the libraries our backend uses. Written with help from Claude (AI), Oct 2026. -->
+<!-- Maven settings: lists the libraries our backend uses. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.smartwellness</groupId>
