@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+//the pages and their addresses
 import CreateAccount from "./pages/CreateAccount";
 import CompanyAccount from "./pages/CompanyAccount";
 import LeaderAccount from "./pages/LeaderAccount";
