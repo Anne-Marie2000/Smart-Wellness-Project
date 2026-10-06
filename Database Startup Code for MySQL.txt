@@ -1,0 +1,40 @@
+---This was the initial creation of the database on MySQL---
+
+
+CREATE USER 'wellness_user'@'localhost' IDENTIFIED BY 'CHANGE ME';
+GRANT ALL PRIVILEGES ON wellness.* TO 'wellness_user'@'localhost';
+FLUSH PRIVILEGES;
+SHOW DATABASES;
+CREATE TABLE IF NOT EXISTS companies (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    company_name VARCHAR(255) NOT NULL,
+    industry VARCHAR(255) NOT NULL,
+    company_size VARCHAR(255) NOT NULL,
+    employee_count INT NOT NULL,
+    contact_name VARCHAR(255) NOT NULL,
+    job_title VARCHAR(255) NOT NULL,
+    work_email VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
+    alternate_email VARCHAR(255),
+    two_factor_enabled TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+SHOW DATABASES;
+
+USE wellness;
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    company_id INT NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(100) NOT NULL DEFAULT 'employee',
+    two_factor_enabled TINYINT(1) NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
+
+SHOW TABLES;
