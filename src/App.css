@@ -1,0 +1,657 @@
+:root {
+  --red: #d85c5d;
+  --cream: #f5f0e7;
+  --white: #ffffff;
+  --text: #292523;
+  --muted: #746d68;
+  --border: #d8d0c5;
+  --light-red: #f8e9e6;
+}
+
+/* Navbar */
+
+.navbar,
+.dashboard-nav {
+  background: var(--white);
+  border-bottom: 1px solid #e9e2d9;
+}
+
+.nav-container,
+.dashboard-nav-inner {
+  max-width: 1200px;
+  height: 82px;
+  margin: auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo,
+.dashboard-logo {
+  width: 130px;
+}
+
+.nav-links,
+.nav-actions,
+.dashboard-tabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a,
+.dashboard-tabs a,
+.back-site {
+  font-size: 14px;
+}
+
+.nav-links a:hover,
+.dashboard-tabs .active {
+  color: var(--red);
+}
+
+.nav-btn {
+  padding: 9px 18px;
+  background: var(--red);
+  color: white;
+  border-radius: 6px;
+}
+
+/* Shared page layout */
+
+.create-account-page,
+.account-setup-page,
+.sign-in-page,
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--cream);
+}
+
+.create-account-container,
+.account-setup-container,
+.sign-in-container,
+.dashboard-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 45px 24px 70px;
+}
+
+.page-title,
+.card-label {
+  color: var(--red);
+}
+
+.page-title {
+  margin-bottom: 20px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 24px;
+}
+
+h1,
+.account-card h2,
+.dashboard-card h2,
+.account-created-card h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+}
+
+.create-heading,
+.account-setup-container > h1,
+.sign-in-container > h1,
+.dashboard-heading h1,
+.employee-heading h1 {
+  font-size: 40px;
+  line-height: 1.1;
+}
+
+.create-heading {
+  max-width: 760px;
+}
+
+.create-heading span,
+.account-card a,
+.forgot-password a,
+.text-button,
+.resource-item button,
+.recommendation button {
+  color: var(--red);
+}
+
+/* Create account */
+
+.account-type-text {
+  margin: 28px 0 16px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 24px;
+}
+
+.account-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.account-card,
+.dashboard-card,
+.stat-card,
+.sign-in-card,
+.account-created-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.account-card {
+  min-height: 230px;
+  padding: 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-card h2 {
+  font-size: 28px;
+}
+
+.account-card p {
+  line-height: 1.6;
+}
+
+.account-card a {
+  margin-top: auto;
+}
+
+.already-account {
+  width: 320px;
+  margin: 55px auto 0;
+  padding: 18px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.already-account p {
+  margin-bottom: 5px;
+}
+
+/* Account setup */
+
+.setup-intro,
+.sign-in-intro,
+.dashboard-heading p,
+.employee-heading > p {
+  color: var(--muted);
+}
+
+.setup-card {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.setup-card-title {
+  padding: 35px;
+  background: #faf7f1;
+  border-right: 1px solid var(--border);
+}
+
+.setup-card-title p,
+.card-label,
+.stat-card p {
+  color: var(--red);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.setup-form {
+  padding: 35px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.setup-form label,
+.sign-in-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 14px;
+}
+
+.setup-form input,
+.setup-form select,
+.sign-in-card input {
+  height: 43px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+}
+
+.setup-form input:focus,
+.setup-form select:focus,
+.sign-in-card input:focus {
+  border-color: var(--red);
+}
+
+.security-consent {
+  grid-column: 1 / -1;
+  padding: 18px;
+  background: #faf7f1;
+  border-radius: 8px;
+}
+
+.security-consent h3 {
+  font-size: 16px;
+}
+
+.checkbox-row {
+  flex-direction: row !important;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.checkbox-row input {
+  width: 16px;
+  height: 16px;
+}
+
+.next-button,
+.sign-in-button,
+.dashboard-button,
+.dashboard-action-button,
+.heading-buttons button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 6px;
+  background: var(--red);
+  color: white;
+}
+
+.next-button {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.account-created-card {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 50px;
+  text-align: center;
+}
+
+.success-check {
+  width: 50px;
+  height: 50px;
+  margin: auto auto 18px;
+  background: var(--light-red);
+  border-radius: 50%;
+  color: var(--red);
+  font-size: 26px;
+  line-height: 50px;
+}
+
+.dashboard-button {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Sign in */
+
+.sign-in-card {
+  width: 500px;
+  margin-top: 25px;
+  padding: 30px;
+}
+
+.role-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 22px;
+}
+
+.role-button {
+  flex: 1;
+  padding: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.role-button.active {
+  color: var(--red);
+  background: var(--light-red);
+  border-color: var(--red);
+}
+
+.sign-in-card label {
+  margin-bottom: 17px;
+}
+
+.forgot-password {
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+.sign-in-button {
+  width: 100%;
+}
+
+/* Dashboards */
+
+.dashboard-tabs .active {
+  border-bottom: 2px solid var(--red);
+}
+
+.dashboard-heading,
+.employee-heading {
+  margin-bottom: 25px;
+}
+
+.company-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.stat-card,
+.dashboard-card {
+  padding: 22px;
+}
+
+.stat-card h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.dashboard-grid,
+.leader-top-grid,
+.employee-top-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.leader-top-grid,
+.employee-top-grid {
+  margin-bottom: 18px;
+}
+
+.dashboard-card h2 {
+  margin-bottom: 18px;
+  font-size: 27px;
+}
+
+.card-label {
+  margin-bottom: 7px;
+}
+
+.muted-text,
+.dashboard-card p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Company dashboard */
+
+.chart-bars {
+  height: 160px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  border-bottom: 1px solid var(--border);
+}
+
+.chart-bar {
+  width: 40px;
+  background: var(--red);
+  border-radius: 4px 4px 0 0;
+}
+
+.bar-one { height: 45px; }
+.bar-two { height: 65px; }
+.bar-three { height: 85px; }
+.bar-four { height: 105px; }
+.bar-five { height: 125px; }
+.bar-six { height: 145px; }
+
+.chart-months {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.survey-row {
+  margin-bottom: 20px;
+}
+
+.survey-row > div:first-child,
+.wallet-details div,
+.small-stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-bar {
+  height: 8px;
+  margin-top: 7px;
+  background: #eee7df;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--red);
+}
+
+.baseline { width: 78%; }
+.q3 { width: 64%; }
+
+.wallet-total {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 38px;
+}
+
+.small-stats {
+  margin-top: 20px;
+}
+
+.event-stat {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee7df;
+}
+
+.event-stat strong {
+  margin-right: 10px;
+  font-size: 22px;
+}
+
+.baseline-grid,
+.benefits-grid,
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.baseline-grid strong {
+  display: block;
+  color: var(--red);
+  font-size: 28px;
+}
+
+.baseline-grid span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Leader and employee cards */
+
+.task-item,
+.survey-item,
+.event-row {
+  padding: 13px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee7df;
+}
+
+.task-item button,
+.text-button,
+.resource-item button,
+.recommendation button,
+.benefits-grid button {
+  background: none;
+  border: none;
+  color: var(--red);
+}
+
+.status-badge {
+  padding: 5px 10px;
+  color: var(--red);
+  background: var(--light-red);
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.event-row {
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.event-date {
+  min-width: 48px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.event-date strong,
+.event-date span {
+  display: block;
+}
+
+.event-date span {
+  color: var(--red);
+  font-size: 9px;
+}
+
+.resource-item,
+.recommendation {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee7df;
+}
+
+.benefits-card,
+.resources-card {
+  grid-column: 1 / -1;
+}
+
+.benefits-grid,
+.resources-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.benefits-grid > div,
+.resources-grid > div {
+  padding: 17px;
+  background: #faf7f1;
+  border-radius: 7px;
+}
+
+.wallet-details div {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee7df;
+}
+
+.heading-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.heading-buttons button:last-child {
+  background: white;
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+/* Smaller screens */
+
+@media (max-width: 800px) {
+  .nav-links {
+    display: none;
+  }
+
+  .account-cards,
+  .dashboard-grid,
+  .leader-top-grid,
+  .employee-top-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-card {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-form {
+    grid-template-columns: 1fr;
+  }
+
+  .next-button {
+    grid-column: 1;
+  }
+
+  .company-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .benefits-card,
+  .resources-card {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-actions .nav-btn:last-child {
+    display: none;
+  }
+
+  .create-heading,
+  .account-setup-container > h1,
+  .sign-in-container > h1,
+  .dashboard-heading h1,
+  .employee-heading h1 {
+    font-size: 32px;
+  }
+
+  .sign-in-card,
+  .already-account {
+    width: 100%;
+  }
+
+  .company-stats,
+  .benefits-grid,
+  .resources-grid,
+  .baseline-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-tabs {
+    gap: 12px;
+  }
+}
