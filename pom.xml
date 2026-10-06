@@ -7,9 +7,13 @@
     <!-- Maven settings: lists the libraries our backend uses. -->
     <!-- General settings -->
     <properties>
+        <!-- Tells Maven to compile your code as Java17 -->
         <maven.compiler.release>17</maven.compiler.release>
+        <!-- Tells Maven to read .java files as UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- A saved Variable, holding Jetty's version number -->
         <jetty.version>12.0.14</jetty.version>
+        <!-- Same idea for JJWT(token) -->
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
