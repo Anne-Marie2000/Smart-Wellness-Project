@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+
+//Signs in to a specific role on goes to the roles dashboard
 function SignIn() {
   const [role, setRole] = useState("company");
   const navigate = useNavigate();
