@@ -83,15 +83,17 @@
     </dependencies>
 
     <!--Extra build tools-->
+    <!--Settings for how Maven builds and runs the project-->
     <build>
         <plugins>
             <!--lets you start the backend from a terminal with
                  "mvn compile exec:java" (not needed when using Eclipse's Run button).
-                 It starts the program from our Main.java. Made by: MojoHaus -->
+                 It starts the program from our Main.java. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
+                <!-- Settings for the tool --> 
                 <configuration>
                     <mainClass>com.smartwellness.api.Main</mainClass>
                 </configuration>
