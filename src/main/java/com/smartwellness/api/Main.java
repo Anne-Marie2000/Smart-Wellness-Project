@@ -11,7 +11,11 @@ import org.eclipse.jetty.server.Server;
 //creates the services
 //connects AuthServlet to its web address
 //starts the web server on http://localhost:8080
+
+// ***Need to work on!***
 //Main.java will use other files, no other files uses Main.java
+//Will talk to the Frontend, after implementing Code in the react pages that call the backend, the Vite proxy in vite.config.js,
+//more servlets such as (events, surveys, resources, SmartIDs), and role checks
 
 public class Main {
 
@@ -49,7 +53,7 @@ public class Main {
         server.setHandler(context);
         server.start();
         System.out.println("Smart Wellness is running at http://localhost:" + port);
-        // keeps running until you press the red stop button
+        // keeps running until you press the red stop button in Eclipse Console
         server.join(); 
     }
 
