@@ -11,6 +11,7 @@ import org.eclipse.jetty.server.Server;
 //creates the services
 //connects AuthServlet to its web address
 //starts the web server on http://localhost:8080
+//Main.java will use other files, no other files uses Main.java
 
 public class Main {
 
@@ -18,13 +19,16 @@ public class Main {
 
         // ---- database ----
         Database db = new Database(
+                //Small helper method, checks Eclipse settings
+                //(Check setting, gives back)
                 env("DB_HOST", "localhost"),
                 Integer.parseInt(env("DB_PORT", "3306")),
                 env("DB_NAME", "wellness"),
                 env("DB_USER", "wellness_user"),
+                //gets the database password from Eclipse's settings so that the backend can log in to MySQL
                 required("DB_PASSWORD"));
 
-        // ---- services ----
+        // ---- create the services ----
         SmartIdService smartIdService = new SmartIdService(db);
         AuthService authService = new AuthService(db, smartIdService);
 
