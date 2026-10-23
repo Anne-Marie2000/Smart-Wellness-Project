@@ -934,3 +934,119 @@ select:focus-visible {
     padding: 22px;
   }
 }
+
+.wellness-page .events-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.wellness-page .wellness-event-card {
+  min-height: 260px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.wellness-event-date {
+  display: block;
+  color: var(--red);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.wellness-page .wellness-event-card h2 { margin-bottom: 12px; }
+.wellness-page .wellness-event-card p { color: var(--muted); margin-bottom: 12px; }
+
+.wellness-event-status {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--light-red);
+  color: var(--red);
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.wellness-page .wellness-event-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.wellness-page .wellness-event-buttons button { padding: 10px 15px; font-size: 13px; }
+
+.wellness-page .wellness-event-buttons button:nth-child(2) {
+  background: white;
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.wellness-page .wellness-event-buttons button:nth-child(3) {
+  background: #f8e9e6;
+  color: #a33f40;
+}
+
+.wellness-form {
+  max-width: 750px;
+  margin: 40px auto 0;
+  padding: 32px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.wellness-form h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 30px;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.wellness-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.wellness-field label { display: block; margin-bottom: 8px; font-size: 14px; }
+
+.wellness-field input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+}
+
+.wellness-full { grid-column: 1 / -1; }
+
+.wellness-form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.wellness-form-buttons button {
+  padding: 11px 24px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.wellness-form-buttons button[type="button"] {
+  background: white;
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+@media (max-width: 700px) {
+  .wellness-page .events-list, .wellness-form-grid { grid-template-columns: 1fr; }
+  .wellness-form { padding: 22px; }
+  .wellness-full { grid-column: auto; }
+}
