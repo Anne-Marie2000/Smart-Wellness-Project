@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Navbar from '../components/Navbar';
 
 export default function AccommodationsBenefits() {
   const [search, setSearch] = useState('');
@@ -35,6 +36,8 @@ export default function AccommodationsBenefits() {
 
   return (
     <main className="dashboard-page">
+      <Navbar />
+
       <div className="dashboard-container">
         <div className="dashboard-heading">
           <p className="page-title">Workplace Services</p>
