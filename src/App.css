@@ -8,8 +8,6 @@
   --light-red: #f8e9e6;
 }
 
-/* Navbar */
-
 .navbar,
 .dashboard-nav {
   background: var(--white);
@@ -57,8 +55,6 @@
   color: white;
   border-radius: 6px;
 }
-
-/* Shared page layout */
 
 .create-account-page,
 .account-setup-page,
@@ -118,8 +114,6 @@ h1,
   color: var(--red);
 }
 
-/* Create account */
-
 .account-type-text {
   margin: 28px 0 16px;
   font-family: "Cormorant Garamond", serif;
@@ -175,8 +169,6 @@ h1,
 .already-account p {
   margin-bottom: 5px;
 }
-
-/* Account setup */
 
 .setup-intro,
 .sign-in-intro,
@@ -302,8 +294,6 @@ h1,
   margin-top: 10px;
 }
 
-/* Sign in */
-
 .sign-in-card {
   width: 500px;
   margin-top: 25px;
@@ -342,8 +332,6 @@ h1,
 .sign-in-button {
   width: 100%;
 }
-
-/* Dashboards */
 
 .dashboard-tabs .active {
   border-bottom: 2px solid var(--red);
@@ -400,8 +388,6 @@ h1,
   color: var(--muted);
   font-size: 13px;
 }
-
-/* Company dashboard */
 
 .chart-bars {
   height: 160px;
@@ -497,8 +483,6 @@ h1,
   font-size: 12px;
 }
 
-/* Leader and employee cards */
-
 .task-item,
 .survey-item,
 .event-row {
@@ -590,8 +574,6 @@ h1,
   color: var(--red);
 }
 
-/* Smaller screens */
-
 @media (max-width: 800px) {
   .nav-links {
     display: none;
@@ -655,8 +637,6 @@ h1,
     gap: 12px;
   }
 }
-
-/* Employee Management */
 
 .employee-tools {
   display: flex;
@@ -760,8 +740,6 @@ h1,
   }
 }
 
-/* Wellness Events */
-
 .events-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -811,8 +789,6 @@ h1,
     grid-template-columns: 1fr;
   }
 }
-
-/* Education Materials */
 
 .education-tabs {
   display: flex;
@@ -867,5 +843,28 @@ h1,
 @media (max-width: 600px) {
   .education-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #8c3535;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .dashboard-container {
+    padding: 25px 16px;
+  }
+
+  .employee-form-buttons,
+  .wellness-event-buttons {
+    flex-wrap: wrap;
+  }
+
+  .chart-bar {
+    width: 25px;
   }
 }
