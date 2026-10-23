@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Navbar from '../components/Navbar';
 
 export default function EducationMaterials() {
   const [tab, setTab] = useState('Employee');
@@ -30,12 +31,11 @@ export default function EducationMaterials() {
     }
   ];
 
-  const filteredMaterials = materials.filter(material =>
-    material.roles.includes(tab)
-  );
+  const filteredMaterials = materials.filter(material => material.roles.includes(tab));
 
   return (
     <main className="dashboard-page">
+      <Navbar />
       <div className="dashboard-container">
         <div className="dashboard-heading">
           <h1>Education Materials</h1>
@@ -43,18 +43,12 @@ export default function EducationMaterials() {
         </div>
 
         <div className="education-tabs">
-          <button
-            className={tab === 'Employee' ? 'active' : ''}
-            onClick={() => setTab('Employee')}
-            aria-pressed={tab === 'Employee'}
-          >
+          <button className={tab === 'Employee' ? 'active' : ''}
+            onClick={() => setTab('Employee')} aria-pressed={tab === 'Employee'}>
             Employee
           </button>
-          <button
-            className={tab === 'Manager' ? 'active' : ''}
-            onClick={() => setTab('Manager')}
-            aria-pressed={tab === 'Manager'}
-          >
+          <button className={tab === 'Manager' ? 'active' : ''}
+            onClick={() => setTab('Manager')} aria-pressed={tab === 'Manager'}>
             Manager
           </button>
         </div>
