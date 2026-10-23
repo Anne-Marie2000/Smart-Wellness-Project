@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Navbar from '../components/Navbar';
 
 export default function WellnessEvents() {
   const [events, setEvents] = useState([
@@ -11,7 +12,6 @@ export default function WellnessEvents() {
 
   function saveEvent(e) {
     e.preventDefault();
-
     const title = form.title.trim();
     const location = form.location.trim();
 
@@ -22,21 +22,13 @@ export default function WellnessEvents() {
 
     if (editingId !== null) {
       setEvents(events.map(event =>
-        event.id === editingId
-          ? { ...event, title, date: form.date, location }
-          : event
+        event.id === editingId ? { ...event, title, date: form.date, location } : event
       ));
     } else {
       setEvents([...events, {
-        id: Date.now(),
-        title,
-        date: form.date,
-        location,
-        joined: false,
-        cancelled: false
+        id: Date.now(), title, date: form.date, location, joined: false, cancelled: false
       }]);
     }
-
     resetForm();
   }
 
@@ -47,11 +39,7 @@ export default function WellnessEvents() {
 
   function editEvent(event) {
     setEditingId(event.id);
-    setForm({
-      title: event.title,
-      date: event.date,
-      location: event.location
-    });
+    setForm({ title: event.title, date: event.date, location: event.location });
   }
 
   function cancelEvent(id) {
@@ -71,8 +59,10 @@ export default function WellnessEvents() {
 
   return (
     <main className="dashboard-page">
-      <div className="dashboard-container">
+      <Navbar />
+      <div className="dashboard-container wellness-page">
         <div className="dashboard-heading">
+          <p className="page-title">Workplace Wellness</p>
           <h1>Wellness Events</h1>
           <p>Explore and manage upcoming wellness activities.</p>
         </div>
@@ -80,10 +70,14 @@ export default function WellnessEvents() {
         <div className="events-list">
           {events.map(event => (
             <div className="wellness-event-card" key={event.id}>
-              <h2>{event.title}</h2>
-              <p>Date: {event.date}</p>
-              <p>Location: {event.location}</p>
-              <p>Status: {event.cancelled ? 'Cancelled' : 'Scheduled'}</p>
+              <div className="wellness-event-info">
+                <span className="wellness-event-date">{event.date}</span>
+                <h2>{event.title}</h2>
+                <p>{event.location}</p>
+                <span className="wellness-event-status">
+                  {event.cancelled ? 'Cancelled' : 'Scheduled'}
+                </span>
+              </div>
 
               {!event.cancelled && (
                 <div className="wellness-event-buttons">
@@ -98,35 +92,29 @@ export default function WellnessEvents() {
           ))}
         </div>
 
-        <form className="employee-form" onSubmit={saveEvent}>
-          <h2>{editingId !== null ? 'Edit Event' : 'Create Event'}</h2>
+        <form className="wellness-form" onSubmit={saveEvent}>
+          <h2>{editingId !== null ? 'Edit Event' : 'Create Wellness Event'}</h2>
+          <div className="wellness-form-grid">
+            <div className="wellness-field">
+              <label htmlFor="event-title">Event Name</label>
+              <input id="event-title" value={form.title}
+                onChange={e => setForm({ ...form, title: e.target.value })} required />
+            </div>
 
-          <label htmlFor="event-title">Event Name</label>
-          <input
-            id="event-title"
-            value={form.title}
-            onChange={e => setForm({ ...form, title: e.target.value })}
-            required
-          />
+            <div className="wellness-field">
+              <label htmlFor="event-date">Date</label>
+              <input id="event-date" type="date" value={form.date}
+                onChange={e => setForm({ ...form, date: e.target.value })} required />
+            </div>
 
-          <label htmlFor="event-date">Date</label>
-          <input
-            id="event-date"
-            type="date"
-            value={form.date}
-            onChange={e => setForm({ ...form, date: e.target.value })}
-            required
-          />
+            <div className="wellness-field wellness-full">
+              <label htmlFor="event-location">Location</label>
+              <input id="event-location" value={form.location}
+                onChange={e => setForm({ ...form, location: e.target.value })} required />
+            </div>
+          </div>
 
-          <label htmlFor="event-location">Location</label>
-          <input
-            id="event-location"
-            value={form.location}
-            onChange={e => setForm({ ...form, location: e.target.value })}
-            required
-          />
-
-          <div className="employee-form-buttons">
+          <div className="wellness-form-buttons">
             <button type="submit">
               {editingId !== null ? 'Save Changes' : 'Create Event'}
             </button>
