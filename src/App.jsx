@@ -20,7 +20,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AccommodationsBenefits />} />
+        <Route path="/" element={<CreateAccount />} />
         <Route path="/accommodations-benefits" element={<AccommodationsBenefits />} />
         <Route path="/employee-management" element={<EmployeeManagement />} />
         <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
@@ -28,9 +28,9 @@ export default function App() {
         <Route path="/education-materials" element={<EducationMaterials />} />
 
         <Route path="/create-account" element={<CreateAccount />} />
-        <Route path="/company-account" element={<CompanyAccount />} />
-        <Route path="/leader-account" element={<LeaderAccount />} />
-        <Route path="/employee-account" element={<EmployeeAccount />} />
+        <Route path="/create-company" element={<CompanyAccount />} />
+        <Route path="/create-leader" element={<LeaderAccount />} />
+        <Route path="/create-employee" element={<EmployeeAccount />} />
         <Route path="/sign-in" element={<SignIn />} />
 
         <Route path="/company-dashboard" element={<CompanyDashboard />} />
