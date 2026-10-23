@@ -655,3 +655,107 @@ h1,
     gap: 12px;
   }
 }
+
+/* Employee Management */
+
+.employee-tools {
+  display: flex;
+  gap: 15px;
+  margin: 25px 0;
+  flex-wrap: wrap;
+}
+
+.employee-tools input,
+.employee-tools select,
+.employee-form input,
+.employee-form select {
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+}
+
+.employee-table-wrap {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.employee-table th,
+.employee-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.employee-table button,
+.employee-form button {
+  padding: 9px 14px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.employee-table button:hover,
+.employee-form button:hover {
+  background: #b94849;
+}
+
+.employee-form {
+  max-width: 500px;
+  margin-top: 30px;
+  padding: 25px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.employee-form h2 {
+  margin-bottom: 20px;
+}
+
+.employee-form label {
+  display: block;
+  margin: 15px 0 6px;
+}
+
+.employee-form input,
+.employee-form select {
+  width: 100%;
+}
+
+.employee-form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .employee-tools {
+    flex-direction: column;
+  }
+
+  .employee-tools input,
+  .employee-tools select {
+    width: 100%;
+  }
+
+  .employee-table th,
+  .employee-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .employee-form {
+    padding: 18px;
+  }
+}
