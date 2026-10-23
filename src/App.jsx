@@ -1,49 +1,75 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from 'react';
 
-//the pages and their addresses
-import CreateAccount from "./pages/CreateAccount";
-import CompanyAccount from "./pages/CompanyAccount";
-import LeaderAccount from "./pages/LeaderAccount";
-import EmployeeAccount from "./pages/EmployeeAccount";
-import SignIn from "./pages/SignIn";
-import CompanyDashboard from "./pages/CompanyDashboard";
-import LeaderDashboard from "./pages/LeaderDashboard";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
+export default function AccommodationsBenefits() {
+  const [search, setSearch] = useState('');
 
-//new pages
-import AccommodationsBenefits from "./pages/AccommodationsBenefits";
-import EmployeeManagement from "./pages/EmployeeManagement";
-import ExecutiveDashboard from "./pages/ExecutiveDashboard";
-import WellnessEvents from "./pages/WellnessEvents";
-import EducationMaterials from "./pages/EducationMaterials";
+  const benefits = {
+    'Workplace Accommodations': [
+      'Flexible work hours',
+      'Remote work options',
+      'Ergonomic workspaces',
+      'Private wellness rooms'
+    ],
+    'Health & Wellness': [
+      'Mental health support',
+      'Wellness coaching',
+      'Fitness programs',
+      'Health education'
+    ],
+    'Leave & Support': [
+      'Medical appointment leave',
+      'Personal wellness days',
+      'Employee assistance programs'
+    ]
+  };
 
-import "./App.css";
+  const filteredBenefits = Object.entries(benefits)
+    .map(([category, items]) => ({
+      category,
+      items: items.filter(item =>
+        item.toLowerCase().includes(search.toLowerCase()) ||
+        category.toLowerCase().includes(search.toLowerCase())
+      )
+    }))
+    .filter(group => group.items.length > 0);
 
-function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<CreateAccount />} />
-        <Route path="/create-account" element={<CreateAccount />} />
+    <main className="dashboard-page">
+      <div className="dashboard-container">
+        <div className="dashboard-heading">
+          <p className="page-title">Workplace Services</p>
+          <h1>Accommodations & Benefits</h1>
+          <p>Explore workplace accommodations and wellness benefits available to employees.</p>
+        </div>
 
-        <Route path="/create-company" element={<CompanyAccount />} />
-        <Route path="/create-leader" element={<LeaderAccount />} />
-        <Route path="/create-employee" element={<EmployeeAccount />} />
+        <div className="benefits-search">
+          <label htmlFor="benefit-search">Search Benefits</label>
+          <input
+            id="benefit-search"
+            type="search"
+            placeholder="Search for a benefit..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
 
-        <Route path="/sign-in" element={<SignIn />} />
+        <div className="benefits-page-grid">
+          {filteredBenefits.map(group => (
+            <div className="benefit-card" key={group.category}>
+              <h2>{group.category}</h2>
+              <ul>
+                {group.items.map(item => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
 
-        <Route path="/company-dashboard" element={<CompanyDashboard />} />
-        <Route path="/leader-dashboard" element={<LeaderDashboard />} />
-        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-
-        <Route path="/accommodations-benefits" element={<AccommodationsBenefits />} />
-        <Route path="/employee-management" element={<EmployeeManagement />} />
-        <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
-        <Route path="/wellness-events" element={<WellnessEvents />} />
-        <Route path="/education-materials" element={<EducationMaterials />} />
-      </Routes>
-    </BrowserRouter>
+        {filteredBenefits.length === 0 && (
+          <p>No matching benefits found.</p>
+        )}
+      </div>
+    </main>
   );
 }
-
-export default App;
