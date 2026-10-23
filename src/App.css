@@ -811,3 +811,61 @@ h1,
     grid-template-columns: 1fr;
   }
 }
+
+/* Education Materials */
+
+.education-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.education-tabs button {
+  padding: 11px 22px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.education-tabs button.active {
+  background: var(--red);
+  color: white;
+  border-color: var(--red);
+}
+
+.education-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.education-card {
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.education-card span {
+  color: var(--red);
+  font-size: 12px;
+}
+
+.education-card h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 27px;
+  font-weight: 400;
+  margin: 12px 0;
+}
+
+.education-card p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .education-grid {
+    grid-template-columns: 1fr;
+  }
+}
