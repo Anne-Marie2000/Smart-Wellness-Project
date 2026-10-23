@@ -37,24 +37,23 @@ export default function AccommodationsBenefits() {
     <main className="dashboard-page">
       <div className="dashboard-container">
         <div className="dashboard-heading">
+          <p className="page-title">Workplace Services</p>
           <h1>Accommodations & Benefits</h1>
-          <p>
-            Explore available workplace accommodations and wellness benefits.
-          </p>
+          <p>Explore workplace accommodations and wellness benefits available to employees.</p>
         </div>
 
-        <label htmlFor="benefit-search">Search benefits</label>
-        <div>
+        <div className="benefits-search">
+          <label htmlFor="benefit-search">Search Benefits</label>
           <input
             id="benefit-search"
             type="search"
-            placeholder="Search benefits..."
+            placeholder="Search for a benefit..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="benefits-grid">
+        <div className="benefits-page-grid">
           {filteredBenefits.map(group => (
             <div className="benefit-card" key={group.category}>
               <h2>{group.category}</h2>
