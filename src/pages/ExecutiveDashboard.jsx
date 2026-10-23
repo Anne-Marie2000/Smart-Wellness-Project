@@ -1,3 +1,5 @@
+import Navbar from '../components/Navbar';
+
 export default function ExecutiveDashboard() {
   const stats = [
     { title: 'Retention', value: '88%' },
@@ -14,6 +16,8 @@ export default function ExecutiveDashboard() {
 
   return (
     <main className="dashboard-page">
+      <Navbar />
+
       <div className="dashboard-container">
         <div className="dashboard-heading">
           <h1>Executive Sponsor Dashboard</h1>
@@ -32,8 +36,11 @@ export default function ExecutiveDashboard() {
         <div className="dashboard-card">
           <h2>Participation Trend</h2>
 
-          <div className="chart-bars" role="img"
-            aria-label="Example participation: July 45%, August 60%, September 68%, October 76%">
+          <div
+            className="chart-bars"
+            role="img"
+            aria-label="Participation: July 45%, August 60%, September 68%, October 76%"
+          >
             {participation.map(item => (
               <div
                 key={item.month}
@@ -49,8 +56,6 @@ export default function ExecutiveDashboard() {
               <span key={item.month}>{item.month}</span>
             ))}
           </div>
-
-          <p>Sample data for frontend testing.</p>
         </div>
       </div>
     </main>
