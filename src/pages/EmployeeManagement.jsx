@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Navbar from '../components/Navbar';
 
 export default function EmployeeManagement() {
   const [employees, setEmployees] = useState([
@@ -89,6 +90,8 @@ export default function EmployeeManagement() {
 
   return (
     <main className="dashboard-page">
+      <Navbar />
+
       <div className="dashboard-container">
         <div className="dashboard-heading">
           <h1>Employee Management</h1>
