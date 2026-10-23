@@ -214,6 +214,15 @@ function CompanyDashboard() {
             </div>
           </div>
         </section>
+
+        <section className="dashboard-card" style={{ marginTop: "24px" }}>
+          <p className="card-label">EVENT MANAGEMENT</p>
+          <h2>Manage Wellness Events</h2>
+          <p className="muted-text">Create and edit upcoming wellness events.</p>
+          <Link to="/wellness-events" className="back-site">
+            Manage Events →
+          </Link>
+        </section>
       </main>
     </div>
   );

@@ -1,3 +1,4 @@
+import WellnessEvents from './pages/WellnessEvents';
 import { useState } from 'react';
 
 export default function AccommodationsBenefits() {
