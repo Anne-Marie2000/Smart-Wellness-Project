@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 
 export default function AccommodationsBenefits() {
@@ -24,38 +23,54 @@ export default function AccommodationsBenefits() {
     ]
   };
 
+  const filteredBenefits = Object.entries(benefits)
+    .map(([category, items]) => ({
+      category,
+      items: items.filter(item =>
+        item.toLowerCase().includes(search.toLowerCase()) ||
+        category.toLowerCase().includes(search.toLowerCase())
+      )
+    }))
+    .filter(group => group.items.length > 0);
+
   return (
-    <div className="dashboard-page">
-      <h1>Accommodations & Benefits</h1>
-      <p>Explore available workplace accommodations and wellness benefits.</p>
+    <main className="dashboard-page">
+      <div className="dashboard-container">
+        <div className="dashboard-heading">
+          <h1>Accommodations & Benefits</h1>
+          <p>
+            Explore available workplace accommodations and wellness benefits.
+          </p>
+        </div>
 
-      <input
-        type="search"
-        placeholder="Search benefits..."
-        aria-label="Search benefits"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+        <label htmlFor="benefit-search">Search benefits</label>
+        <div>
+          <input
+            id="benefit-search"
+            type="search"
+            placeholder="Search benefits..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
 
-      <div className="benefits-grid">
-        {Object.entries(benefits).map(([category, items]) => {
-          const filtered = items.filter(item =>
-            item.toLowerCase().includes(search.toLowerCase()) ||
-            category.toLowerCase().includes(search.toLowerCase())
-          );
-
-          if (filtered.length === 0) return null;
-
-          return (
-            <div className="benefit-card" key={category}>
-              <h2>{category}</h2>
+        <div className="benefits-grid">
+          {filteredBenefits.map(group => (
+            <div className="benefit-card" key={group.category}>
+              <h2>{group.category}</h2>
               <ul>
-                {filtered.map(item => <li key={item}>{item}</li>)}
+                {group.items.map(item => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        {filteredBenefits.length === 0 && (
+          <p>No matching benefits found.</p>
+        )}
       </div>
-    </div>
+    </main>
   );
 }
