@@ -189,6 +189,31 @@ function CompanyDashboard() {
             </div>
           </div>
         </section>
+
+        <section className="dashboard-card" style={{ marginTop: "24px" }}>
+          <p className="card-label">ENGAGEMENT</p>
+          <h2>Participation Trend</h2>
+          <p className="muted-text">Monthly wellness program participation</p>
+
+          <div className="chart-placeholder">
+            <div className="chart-bars">
+              <div className="chart-bar bar-one"></div>
+              <div className="chart-bar bar-two"></div>
+              <div className="chart-bar bar-three"></div>
+              <div className="chart-bar bar-four"></div>
+              <div className="chart-bar bar-five"></div>
+              <div className="chart-bar bar-six"></div>
+            </div>
+            <div className="chart-months">
+              <span>Apr</span>
+              <span>May</span>
+              <span>Jun</span>
+              <span>Jul</span>
+              <span>Aug</span>
+              <span>Sep</span>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
