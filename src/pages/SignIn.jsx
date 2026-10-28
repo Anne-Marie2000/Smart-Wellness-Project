@@ -1,23 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { ROLES, ROLE_INFO, dashboardFor } from "../roles";
 
+//Role buttons come from src/roles.js
+const signInRoles = Object.entries(ROLE_INFO).filter(([, info]) => info.showOnSignIn);
 
-//Signs in to a specific role on goes to the roles dashboard
+//Signs in to a specific role on goes to the roles dashboard,
+// so a new role only has to be added there
 function SignIn() {
-  const [role, setRole] = useState("company");
+  const [role, setRole] = useState(ROLES.COMPANY_ADMIN);
   const navigate = useNavigate();
 
   const handleSignIn = (e) => {
     e.preventDefault();
-
-    if (role === "company") {
-      navigate("/company-dashboard");
-    } else if (role === "leader") {
-      navigate("/leader-dashboard");
-    } else {
-      navigate("/employee-dashboard");
-    }
+    navigate(dashboardFor(role));
   };
 
   return (
@@ -39,9 +36,10 @@ function SignIn() {
 
             <div className="role-buttons">
               <button
+                key={key}
                 type="button"
                 className={role === "company" ? "role-button active" : "role-button"}
-                onClick={() => setRole("company")}
+                onClick={() => setRole(key)}
               >
                 Company
               </button>
