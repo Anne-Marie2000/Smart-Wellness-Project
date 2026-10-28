@@ -1,5 +1,6 @@
 package com.smartwellness.api.services;
 
+import com.smartwellness.api.auth.Roles;
 import com.smartwellness.api.database.Database;
 import java.security.SecureRandom;
 import java.sql.*;
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 
 /*
  * Handles creating and looking up Smart ID codes. A company admin
- * generates a code for a specific role (employee/leader/admin), and
+ * generates a code for a specific role (any role listed in Roles.java, including executive_sponsor), and
  * whoever signs up with that code gets linked to the right company
  * automatically - see AuthService.register().
  */
@@ -32,6 +33,7 @@ public class SmartIdService {
     }
 
     public String generateSmartId(int companyId, String intendedRole, Integer expiresInDays) throws SQLException {
+        //Stopes a Smart ID code being made if the role does not exist.
         String code = generateCode();
         Timestamp expiresAt = expiresInDays != null
                 ? Timestamp.valueOf(LocalDateTime.now().plusDays(expiresInDays))
