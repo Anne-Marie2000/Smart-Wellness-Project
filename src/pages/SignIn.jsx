@@ -32,17 +32,17 @@ function SignIn() {
           </p>
 
           <form className="sign-in-card" onSubmit={handleSignIn}>
-            <p> className="role-label">Choose your account type</p>
+            <p className="role-label">Choose your account type</p>
 
           <div className="role-buttons">
-            {signInRoles.map(([key, info]) => {
+            {signInRoles.map(([key, info]) => (
               <button
                 key={key}
                 type="button"
                 className={role === key ? "role-button active" : "role-button"}
                 onClick={() => setRole(key)}
                 >
-                {infro.label}
+                {info.label}
                 </button>
               ))}
           </div>
