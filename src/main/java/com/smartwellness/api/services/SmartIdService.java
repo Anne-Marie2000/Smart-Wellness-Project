@@ -33,7 +33,11 @@ public class SmartIdService {
     }
 
     public String generateSmartId(int companyId, String intendedRole, Integer expiresInDays) throws SQLException {
-        //Stopes a Smart ID code being made if the role does not exist.
+        //Stops a Smart ID code being made if the role does not exist.
+        if (!Roles.isValid(intendedRole)) {
+            throw new IllegalArgumentException("Unknown role: " + intendedRole + ". Allowed roles: " + Roles.ALL);
+        }
+        
         String code = generateCode();
         Timestamp expiresAt = expiresInDays != null
                 ? Timestamp.valueOf(LocalDateTime.now().plusDays(expiresInDays))
