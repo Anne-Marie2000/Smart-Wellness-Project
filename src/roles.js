@@ -2,7 +2,7 @@
 // must match the roles that the back end stores
 
 export const ROLES = {
-  COMPANY_ADMIN: 'company admin',
+  COMPANY_ADMIN: 'company_admin',
   LEADER: 'leader',
   EMPLOYEE: 'employee',
   EXECUTIVE_SPONSOR: 'executive_sponsor',
