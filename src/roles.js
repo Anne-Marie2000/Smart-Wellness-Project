@@ -22,7 +22,7 @@ export const ROLE_INFO = {
     showOnSignIn: true,
   },
 
-  [ROLES. EMPLOYEE]: {
+  [ROLES.EMPLOYEE]: {
     label: 'Employee',
     dashboard: '/employee-dashboard',
     showOnSignIn: true,
@@ -37,7 +37,7 @@ export const ROLE_INFO = {
   //Wellness Admin Dashboard is not built yet, so it is hidden
   [ROLES.SMART_WELLNESS_ADMIN]: {
     label: 'Smart Wellness Admin',
-    dashboarde: null,
+    dashboard: null,
     showOnSignIn: false,
   },
 };
