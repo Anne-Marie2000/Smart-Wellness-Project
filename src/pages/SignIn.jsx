@@ -32,35 +32,21 @@ function SignIn() {
           </p>
 
           <form className="sign-in-card" onSubmit={handleSignIn}>
-            <p className="role-label">Choose your account type</p>
+            <p> className="role-label">Choose your account type</p>
 
-            <div className="role-buttons">
+          <div className="role-buttons">
+            {signInRoles.map(([key, info]) => {
               <button
                 key={key}
                 type="button"
-                className={role === "company" ? "role-button active" : "role-button"}
+                className={role === key ? "role-button active" : "role-button"}
                 onClick={() => setRole(key)}
-              >
-                Company
-              </button>
-
-              <button
-                type="button"
-                className={role === "leader" ? "role-button active" : "role-button"}
-                onClick={() => setRole("leader")}
-              >
-                Leader
-              </button>
-
-              <button
-                type="button"
-                className={role === "employee" ? "role-button active" : "role-button"}
-                onClick={() => setRole("employee")}
-              >
-                Employee
-              </button>
-            </div>
-
+                >
+                {infro.label}
+                </button>
+              ))}
+          </div>
+            
             <label>
               Email
               <input type="email" required />
