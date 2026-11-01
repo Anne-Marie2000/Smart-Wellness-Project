@@ -1,25 +1,28 @@
 package com.smartwellness.api.servlets;
 
+import com.smartwellness.api.AppContext;
 import com.smartwellness.api.services.AuthService;
 import org.json.JSONObject;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.*;
 
 /*
  * Handles the /auth/register and /auth/login endpoints. This is the
  * example of how a service class gets wired up to an actual HTTP
- * endpoint - the other services (Smart ID, Resources, Engagement,
- * Surveys) would each get their own servlet that follows this same
- * pattern.
+ * endpoint - the other servlets follow the same pattern.
  */
+@WebServlet("/auth/*")
 public class AuthServlet extends HttpServlet {
+    private AuthService authService;
 
-    private final AuthService authService;
-
-    public AuthServlet(AuthService authService) {
-        this.authService = authService;
+    // Tomcat creates this servlet itself, so it can't pass the service in
+    // through a constructor. We get the shared AuthService here instead.
+    @Override
+    public void init() {
+        authService = AppContext.auth();
     }
 
     @Override
@@ -33,10 +36,10 @@ public class AuthServlet extends HttpServlet {
             String token;
             if ("/register".equals(path)) {
                 token = authService.register(
-                        body.getString("email"),
-                        body.getString("password"),
-                        body.getString("full_name"),
-                        body.getString("smart_id_code")
+                    body.getString("email"),
+                    body.getString("password"),
+                    body.getString("full_name"),
+                    body.getString("smart_id_code")
                 );
             } else if ("/login".equals(path)) {
                 token = authService.login(body.getString("email"), body.getString("password"));
