@@ -84,7 +84,7 @@ public class AuthService {
     }
 
     public String login(String email, String password) throws SQLException, AuthException {
-        String sql = "SELECT id, password_hash, role, company_id FROM users WHERE email = ?";
+        String sql = "SELECT id, password_hash, role, company_id, is_active FROM users WHERE email = ?";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -96,6 +96,11 @@ public class AuthService {
             String hash = rs.getString("password_hash");
             if (!PasswordUtil.verify(password, hash)) {
                 throw new AuthException("Invalid email or password");
+            }
+
+            // checked after the password so a stranger can't use login to find out which accounts are deactivated
+            if (!rs.getBoolean("is_active")) {
+                throw new AuthException("This account has been deactivated");
             }
 
             return issueToken(rs.getInt("id"), rs.getString("role"), rs.getInt("company_id"));
