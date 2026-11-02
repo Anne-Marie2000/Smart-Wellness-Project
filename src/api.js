@@ -17,7 +17,6 @@ export function signOut() {
 //The token has 3 parts seperated by dots. The middle part holds the role.
 
 export function getRole() {
-  const token = getRole() {
     const token = getToken();
     if (!token) {
       return null;
