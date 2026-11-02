@@ -22,7 +22,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<CreateAccount />} />
-        {
         <Route path="/employee-management" element={
           <RequireRole roles={['company_admin']}><EmployeeManagement /></RequireRole>
         } />
