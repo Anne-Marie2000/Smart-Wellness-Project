@@ -2,7 +2,7 @@ package com.smartwellness.api;
 
 import com.smartwellness.api.database.Database;
 import com.smartwellness.api.services.*;
-import com.smartwellness.api.servlets.AuthServlet;
+import com.smartwellness.api.servlets.*;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
