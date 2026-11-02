@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { ROLES, ROLE_INFO, dashboardFor } from "../roles";
+import { apiRequest, saveToken, getRole, signOut } from "../api";
 
 //Role buttons come from src/roles.js
 const signInRoles = Object.entries(ROLE_INFO).filter(([, info]) => info.showOnSignIn);
@@ -10,11 +11,36 @@ const signInRoles = Object.entries(ROLE_INFO).filter(([, info]) => info.showOnSi
 // so a new role only has to be added there
 function SignIn() {
   const [role, setRole] = useState(ROLES.COMPANY_ADMIN);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSignIn = (e) => {
+  // Sends the email and password to the backend.
+  // If they are correct, the backend sends back a login token.
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    navigate(dashboardFor(role));
+    setError("");
+
+    try {
+      const data = await apiRequest("POST", "/api/auth/login", { email: email, password: password });
+      saveToken(data.token);
+    } catch (err) {
+      setError(err.message); 
+      return;
+    }
+
+    // The token says what kind of account this really is
+    const accountRole = getRole();
+
+    // Check they clicked the right account type button
+    if (ROLE_INFO[accountRole].showOnSignIn && accountRole !== role) {
+      signOut();
+      setError("This is a " + ROLE_INFO[accountRole].label + " account. Please choose that button above.");
+      return;
+    }
+
+    navigate(dashboardFor(accountRole));
   };
 
   return (
@@ -49,7 +75,12 @@ function SignIn() {
             
             <label>
               Email
-              <input type="email" required />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </label>
 
             <label>
@@ -59,12 +90,19 @@ function SignIn() {
 
             <label>
               Password
-              <input type="password" required />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </label>
 
             <div className="forgot-password">
               <a href="#">Forgot Password?</a>
             </div>
+
+            {error && <p className="form-error">{error}</p>}
 
             <button type="submit" className="sign-in-button">
               SIGN IN
