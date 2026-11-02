@@ -32,20 +32,23 @@ public class Main {
                 //gets the database password from Eclipse's settings so that the backend can log in to MySQL
                 required("DB_PASSWORD"));
 
-        // ---- create the services ----
+              // ---- create the services ----
         SmartIdService smartIdService = new SmartIdService(db);
         AuthService authService = new AuthService(db, smartIdService);
 
-        // Not used yet - each one will get its own servlet later
-        ResourceService resourceService = new ResourceService(db);
-        EngagementService engagementService = new EngagementService(db);
-        SurveyService surveyService = new SurveyService(db);
+        // AppContext keeps one copy of every service so all the servlets can share them
+        AppContext.init(db, authService);
 
-        // ---- servlets -> web addresses ----
+        // Every address starts with /api so the React site (through vite.config.js)
+        // knows to send it to this Java server.
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
-       // When a request comes in for http://localhost:8080/api/auth/... , send it to AuthServlet
-        context.addServlet(new ServletHolder(new AuthServlet(authService)), "/api/auth/*");
+        context.addServlet(new ServletHolder(new AuthServlet()), "/api/auth/*");
+        context.addServlet(new ServletHolder(new EmployeesServlet()), "/api/employees/*");
+        context.addServlet(new ServletHolder(new EventsServlet()), "/api/events/*");
+        context.addServlet(new ServletHolder(new BenefitsServlet()), "/api/benefits/*");
+        context.addServlet(new ServletHolder(new ResourcesServlet()), "/api/resources/*");
+        context.addServlet(new ServletHolder(new RoiServlet()), "/api/roi/*");
 
         // ---- start ----
         int port = Integer.parseInt(env("PORT", "8080"));
