@@ -1,38 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
+import { apiRequest } from '../api';
+
+// Accommodations & Benefits 
+// The benefits are saved in MySQL. 
 
 export default function AccommodationsBenefits() {
+  const [benefits, setBenefits] = useState([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState('');       
 
-  const benefits = {
-    'Workplace Accommodations': [
-      'Flexible work hours',
-      'Remote work options',
-      'Ergonomic workspaces',
-      'Private wellness rooms'
-    ],
-    'Health & Wellness': [
-      'Mental health support',
-      'Wellness coaching',
-      'Fitness programs',
-      'Health education'
-    ],
-    'Leave & Support': [
-      'Medical appointment leave',
-      'Personal wellness days',
-      'Employee assistance programs'
-    ]
-  };
+  // Get the benefits from the backend
+  function loadBenefits() {
+    apiRequest('GET', '/api/benefits')
+      .then(data => setBenefits(data.benefits))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }
 
-  const filteredBenefits = Object.entries(benefits)
-    .map(([category, items]) => ({
-      category,
-      items: items.filter(item =>
-        item.toLowerCase().includes(search.toLowerCase()) ||
-        category.toLowerCase().includes(search.toLowerCase())
-      )
-    }))
-    .filter(group => group.items.length > 0);
+  // Load them once when the page opens
+  useEffect(() => {
+    loadBenefits();
+  }, []);
+
+  // Only keep the benefits that match the search box
+  const matchingBenefits = benefits.filter(benefit =>
+    `${benefit.title} ${benefit.category} ${benefit.description}`
+      .toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Make a list of the categories, so each category gets its own card
+  const categories = [];
+  matchingBenefits.forEach(benefit => {
+    if (!categories.includes(benefit.category)) {
+      categories.push(benefit.category);
+    }
+  });
 
   return (
     <main className="dashboard-page">
@@ -56,22 +60,41 @@ export default function AccommodationsBenefits() {
           />
         </div>
 
+        {loading && <p>Loading benefits...</p>}
+
+        {error && (
+          <div className="form-error">
+            <p>{error}</p>
+            <button type="button" onClick={() => { setError(''); loadBenefits(); }}>Try again</button>
+          </div>
+        )}
+
+        {!loading && !error && benefits.length === 0 && (
+          <p>No benefits have been added for your workplace yet.</p>
+        )}
+
+        {!loading && !error && benefits.length > 0 && matchingBenefits.length === 0 && (
+          <p>No matching benefits found.</p>
+        )}
+
         <div className="benefits-page-grid">
-          {filteredBenefits.map(group => (
-            <div className="benefit-card" key={group.category}>
-              <h2>{group.category}</h2>
+          {categories.map(category => (
+            <div className="benefit-card" key={category}>
+              <h2>{category}</h2>
               <ul>
-                {group.items.map(item => (
-                  <li key={item}>{item}</li>
-                ))}
+                {matchingBenefits
+                  .filter(benefit => benefit.category === category)
+                  .map(benefit => (
+                    <li key={benefit.id}>
+                      <strong>{benefit.title}</strong>
+                      <span>{benefit.description}</span>
+                      {benefit.how_to_access && <span>How to get it: {benefit.how_to_access}</span>}
+                    </li>
+                  ))}
               </ul>
             </div>
           ))}
         </div>
-
-        {filteredBenefits.length === 0 && (
-          <p>No matching benefits found.</p>
-        )}
       </div>
     </main>
   );
