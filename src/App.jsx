@@ -22,12 +22,23 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<CreateAccount />} />
-        <Route path="/accommodations-benefits" element={<AccommodationsBenefits />} />
-        <Route path="/employee-management" element={<EmployeeManagement />} />
-        <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
-        <Route path="/wellness-events" element={<WellnessEvents />} />
-        <Route path="/education-materials" element={<EducationMaterials />} />
-
+        {
+        <Route path="/employee-management" element={
+          <RequireRole roles={['company_admin']}><EmployeeManagement /></RequireRole>
+        } />
+        <Route path="/executive-dashboard" element={
+          <RequireRole roles={['executive_sponsor']}><ExecutiveDashboard /></RequireRole>
+        } />
+        <Route path="/accommodations-benefits" element={
+          <RequireRole><AccommodationsBenefits /></RequireRole>
+        } />
+        <Route path="/wellness-events" element={
+          <RequireRole><WellnessEvents /></RequireRole>
+        } />
+        <Route path="/education-materials" element={
+          <RequireRole><EducationMaterials /></RequireRole>
+        } />
+          
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/create-company" element={<CompanyAccount />} />
         <Route path="/create-leader" element={<LeaderAccount />} />
