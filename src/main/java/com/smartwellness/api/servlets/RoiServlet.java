@@ -24,7 +24,7 @@ public class RoiServlet extends ApiServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        RequestAuth auth = login(req, resp, "company_admin", "leader", "smart_wellness_admin");
+        RequestAuth auth = login(req, resp, "executive_sponsor", "company_admin", "leader", "smart_wellness_admin");
         if (auth == null) return;
         try {
             String[] p = segments(req);
