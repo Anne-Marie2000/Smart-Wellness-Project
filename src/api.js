@@ -1,10 +1,10 @@
 // A small helper function that every page uses to talk to the Java backend.
 
 // Saving the login
-// When someone signs in, the backend sends back a "token" (a long piecce of text).
+// When someone signs in, the backend sends back a "token" (a long piece of text).
 //We save it in the browser and send it with every request, so the backend knows who they are and what role they have.
 
-export function saveTaken(token) {
+export function saveToken(token) {
   sessionStorage.setItem('token', token);
 }
 export function getToken() {
