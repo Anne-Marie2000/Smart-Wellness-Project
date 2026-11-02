@@ -34,10 +34,11 @@ export const ROLE_INFO = {
     showOnSignIn: true,
   },
 
-  //Wellness Admin Dashboard is not built yet, so it is hidden
+  // Wellness Admin Dashboard is not built yet, so it is hidden
+  // Smart Wellness Admins manage wellness events, so they can go to that page.
   [ROLES.SMART_WELLNESS_ADMIN]: {
     label: 'Smart Wellness Admin',
-    dashboard: null,
+    dashboard: '/wellness-events',
     showOnSignIn: false,
   },
 };
