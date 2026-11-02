@@ -7,6 +7,9 @@
 export function saveTaken(token) {
   sessionStorage.setItem('token', token);
 }
+export function getToken() {
+  return sessionStorage.getItem('token');
+}
 export function signOut() {
   sessionStorage.removeItem('token');
 }
@@ -14,7 +17,7 @@ export function signOut() {
 //The token has 3 parts seperated by dots. The middle part holds the role.
 
 export function getRole() {
-  const toekn = getRole() {
+  const tokenn = getRole() {
     const token = getToken();
     if (!token) {
       return null;
