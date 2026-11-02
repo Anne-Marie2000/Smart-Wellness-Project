@@ -39,11 +39,11 @@
 
         <!-- scrambles (hashes) passwords so we never save the real password.
              Used in: PasswordUtil.java -->
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
-        </dependency>
+     <dependency>
+         <groupId>org.bouncycastle</groupId>
+         <artifactId>bcprov-jdk18on</artifactId>
+         <version>1.85</version>
+     </dependency>
 
         <!-- makes and checks the login tokens (proof that someone is logged in).
              Used in: AuthService.java and TokenUtil.java. -->
