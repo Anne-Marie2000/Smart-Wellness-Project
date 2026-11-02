@@ -19,7 +19,6 @@ function Navbar() {
           <img src="/smart-wellness-logo.png" alt="Smart Wellness Canada" />
         </Link>
 
-        {/* Signed in: links to the pages for your role. Signed out: the normal website links. */}
         {role ? (
           <nav className="nav-links">
             <Link to={dashboardFor(role)}>Dashboard</Link>
