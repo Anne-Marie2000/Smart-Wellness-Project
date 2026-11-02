@@ -1050,3 +1050,39 @@ select:focus-visible {
   .wellness-form { padding: 22px; }
   .wellness-full { grid-column: auto; }
 }
+
+.form-error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  color: #9b2c2c;
+  background: var(--light-red);
+  border: 1px solid var(--red);
+  border-radius: 6px;
+}
+
+button.nav-btn {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.benefit-card li span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.roi-download {
+  padding: 10px 18px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.education-card summary {
+  margin-top: 12px;
+  color: var(--red);
+  cursor: pointer;
+}
