@@ -22,7 +22,8 @@ public class SmartIdService {
     }
 
     // Builds a short random code like "SW-9F3K7B2A"
-    private String generateCode() {
+    //public static so AuthService and EmployeeService can use it too.
+    public static String generateCode() {
         byte[] bytes = new byte[4];
         RANDOM.nextBytes(bytes);
         StringBuilder hex = new StringBuilder("SW-");
