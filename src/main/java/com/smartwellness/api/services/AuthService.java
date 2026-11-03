@@ -1,5 +1,6 @@
 package com.smartwellness.api.services;
 
+import org.json.JSONObject;
 import com.smartwellness.api.auth.PasswordUtil;
 import com.smartwellness.api.database.Database;
 import io.jsonwebtoken.Jwts;
