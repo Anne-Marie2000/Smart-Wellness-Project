@@ -128,6 +128,7 @@ export default function EmployeeManagement() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Smart ID</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -138,6 +139,8 @@ export default function EmployeeManagement() {
                   <td>{employee.full_name}</td>
                   <td>{employee.email}</td>
                   <td>{roleNames[employee.role]}</td>
+                  {/* their Smart ID - give it to them so they can sign in */}
+                  <td>{employee.smart_id}</td>
                   <td>{employee.is_active ? 'Active' : 'Inactive'}</td>
                   <td>
                     <button onClick={() => editEmployee(employee)}>
