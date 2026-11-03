@@ -158,6 +158,11 @@ function LeaderAccount() {
               <p>
                 Your leader account has been successfully created.
               </p>
+              
+              <p>
+                Your Smart ID is <strong>{smartId}</strong>.
+                Keep it. You need it with your email and password to sign in.
+              </p>
 
               <Link to="/leader-dashboard" className="dashboard-button">
                 GO TO DASHBOARD
