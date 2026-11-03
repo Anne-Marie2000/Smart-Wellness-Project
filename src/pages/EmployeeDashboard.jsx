@@ -1,86 +1,68 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import UpcomingEvents from "../components/UpcomingEvents";
+import { apiRequest } from "../api";
+
+// Employee dashboard.
+// Data comes from MySQL through the backend:
+// Every button opens a real page, or "Coming soon" for features not built yet
+// (AI assistant, coaching, wallet, surveys, community board).
 
 function EmployeeDashboard() {
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [guides, setGuides] = useState([]);
+
+  // Load once when the page opens
+  useEffect(() => {
+    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
+    apiRequest("GET", "/api/resources?audience=employee").then(data => setGuides(data.resources));
+  }, []);
+
+  // "Emma Employee" -> "Emma"
+  const firstName = profile ? profile.full_name.split(" ")[0] : "";
+
   return (
     <div className="dashboard-page">
-      <header className="dashboard-nav">
-        <div className="dashboard-nav-inner">
-          <Link to="/" className="dashboard-logo">
-            <img src="/smart-wellness-logo.png" alt="Smart Wellness Canada" />
-          </Link>
-
-          <div className="dashboard-tabs">
-            <Link to="/company-dashboard">Company</Link>
-            <Link to="/leader-dashboard">Leader</Link>
-            <Link to="/employee-dashboard" className="active">
-              Employee
-            </Link>
-          </div>
-
-          <Link to="/" className="back-site">
-            ← Back to site
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="dashboard-container employee-dashboard">
         <section className="employee-heading">
           <p className="card-label">YOUR WELLNESS</p>
 
-          <h1>
-            Hi Maya — glad you're here.
-          </h1>
+          <h1>Hi {firstName} — glad you're here.</h1>
 
-          <p>
-            Today's a good day for something small and kind.
-          </p>
+          <p>Today's a good day for something small and kind.</p>
 
           <div className="heading-buttons">
-            <button>Ask AI</button>
-            <button>Book Coaching</button>
+            <button onClick={() => navigate("/coming-soon")}>Ask AI</button>
+            <button onClick={() => navigate("/coming-soon")}>Book Coaching</button>
           </div>
         </section>
 
         <section className="employee-top-grid">
           <div className="dashboard-card wallet-card">
             <p className="card-label">DIGITAL WALLET</p>
-            <h2>$185 available</h2>
-
-            <div className="wallet-details">
-              <div>
-                <span>Employer Credits</span>
-                <strong>$150</strong>
-              </div>
-
-              <div>
-                <span>SWC Top-Up</span>
-                <strong>$35</strong>
-              </div>
-            </div>
-
-            <button className="text-button">View Transactions →</button>
+            <h2>Wellness Credits</h2>
+            <p>Credits from your employer for wellness services are coming soon.</p>
+            <button className="text-button" onClick={() => navigate("/coming-soon")}>Learn more →</button>
           </div>
 
           <div className="dashboard-card recommended-card">
             <p className="card-label">FOR YOU</p>
             <h2>Recommended for You</h2>
 
-            <div className="recommendation">
-              <h3>Understanding Midlife Changes</h3>
-              <p>
-                A short guide to common symptoms and ways to support your
-                wellbeing.
-              </p>
-              <button>Read Article →</button>
-            </div>
+            {guides.length === 0 && <p>No guides yet.</p>}
 
-            <div className="recommendation">
-              <h3>Sleep &amp; Recovery</h3>
-              <p>
-                Simple ideas that may help you build a healthier sleep routine.
-              </p>
-              <button>Explore →</button>
-            </div>
+            {/* show the first 2 guides */}
+            {guides.slice(0, 2).map(guide => (
+              <div className="recommendation" key={guide.id}>
+                <h3>{guide.title}</h3>
+                <p>{guide.category}</p>
+                <button onClick={() => navigate("/education-materials")}>Read Article →</button>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -88,13 +70,8 @@ function EmployeeDashboard() {
           <div className="dashboard-card ai-card">
             <p className="card-label">PERSONAL SUPPORT</p>
             <h2>AI Wellness Assistant</h2>
-
-            <p>
-              Ask questions and find wellness resources based on what you need
-              today.
-            </p>
-
-            <button className="dashboard-action-button">
+            <p>Ask questions and find wellness resources based on what you need today.</p>
+            <button className="dashboard-action-button" onClick={() => navigate("/coming-soon")}>
               Ask the Wellness Assistant
             </button>
           </div>
@@ -102,64 +79,21 @@ function EmployeeDashboard() {
           <div className="dashboard-card">
             <p className="card-label">UPCOMING</p>
             <h2>Upcoming Events</h2>
-
-            <div className="event-list">
-              <div className="event-row">
-                <div className="event-date">
-                  <strong>12</strong>
-                  <span>OCT</span>
-                </div>
-
-                <div>
-                  <h3>Midlife Wellness Workshop</h3>
-                  <p>12:00 PM · Virtual</p>
-                </div>
-              </div>
-
-              <div className="event-row">
-                <div className="event-date">
-                  <strong>20</strong>
-                  <span>OCT</span>
-                </div>
-
-                <div>
-                  <h3>Sleep &amp; Stress Session</h3>
-                  <p>1:00 PM · Virtual</p>
-                </div>
-              </div>
-            </div>
-
-            <button className="text-button">View All Events →</button>
+            <UpcomingEvents />
           </div>
 
           <div className="dashboard-card">
             <p className="card-label">SURVEYS</p>
             <h2>Required Surveys</h2>
-
-            <div className="survey-list">
-              <div className="survey-item">
-                <div>
-                  <h3>Q3 Wellness Check-In</h3>
-                  <p>About 5 minutes</p>
-                </div>
-
-                <span className="status-badge">Open</span>
-              </div>
-            </div>
-
-            <button className="text-button">Start Survey →</button>
+            <p>Wellness surveys are planned for Sprint 3.</p>
+            <button className="text-button" onClick={() => navigate("/coming-soon")}>Start Survey →</button>
           </div>
 
           <div className="dashboard-card">
             <p className="card-label">COMMUNITY</p>
             <h2>Community Board</h2>
-
-            <p>
-              Connect with wellness conversations and see what others in the
-              community are sharing.
-            </p>
-
-            <button className="text-button">Visit Community →</button>
+            <p>Connect with wellness conversations and see what others are sharing.</p>
+            <button className="text-button" onClick={() => navigate("/coming-soon")}>Visit Community →</button>
           </div>
 
           <div className="dashboard-card resources-card">
@@ -170,19 +104,19 @@ function EmployeeDashboard() {
               <div>
                 <h3>Menopause &amp; Midlife</h3>
                 <p>Articles, guides, and educational resources.</p>
-                <button>Explore →</button>
+                <button onClick={() => navigate("/education-materials")}>Explore →</button>
               </div>
 
               <div>
-                <h3>Nutrition</h3>
-                <p>Practical resources for everyday wellness.</p>
-                <button>Explore →</button>
+                <h3>Accommodations &amp; Benefits</h3>
+                <p>Support and benefits at your workplace.</p>
+                <button onClick={() => navigate("/accommodations-benefits")}>Explore →</button>
               </div>
 
               <div>
-                <h3>Mental Wellness</h3>
-                <p>Support for stress, wellbeing, and emotional health.</p>
-                <button>Explore →</button>
+                <h3>Wellness Events</h3>
+                <p>Workshops and sessions you can join.</p>
+                <button onClick={() => navigate("/wellness-events")}>Explore →</button>
               </div>
             </div>
           </div>
