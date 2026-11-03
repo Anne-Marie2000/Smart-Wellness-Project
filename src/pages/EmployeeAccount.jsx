@@ -149,8 +149,10 @@ function EmployeeAccount() {
 
               <h2>Account Created</h2>
 
+
               <p>
-                Your employee account has been successfully created.
+                Your Smart ID is <strong>{smartId}</strong>.
+                Keep it. You need it with your email and password to sign in.
               </p>
 
               <Link to="/employee-dashboard" className="dashboard-button">
