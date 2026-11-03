@@ -10,11 +10,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.*;
 
-
- // Handles /auth/register, /auth/register-company, /auth/login and /auth/me. This is the
- // example of how a service class gets wired up to an actual HTTP
- // endpoint - the other servlets follow the same pattern.
-
+// Handles /auth/register, /auth/register-company, /auth/login and /auth/me. This is the
+// example of how a service class gets wired up to an actual HTTP
+// endpoint - the other servlets follow the same pattern.
 @WebServlet("/auth/*")
 public class AuthServlet extends HttpServlet {
     private AuthService authService;
@@ -29,7 +27,7 @@ public class AuthServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        String path = req.getPathInfo(); 
+        String path = req.getPathInfo(); // "/register", "/register-company" or "/login"
 
         JSONObject body = readJsonBody(req);
 
@@ -43,8 +41,8 @@ public class AuthServlet extends HttpServlet {
                     body.getString("smart_id_code")
                 );
             } else if ("/register-company".equals(path)) {
-                // Create Company Account page
-                token = authService.registerCompany(
+                // Create Company Account page - sends back the token AND the new Smart ID
+                JSONObject result = authService.registerCompany(
                     body.getString("company_name"),
                     body.getString("industry"),
                     body.getString("company_size"),
@@ -55,8 +53,15 @@ public class AuthServlet extends HttpServlet {
                     body.getString("phone_number"),
                     body.getString("password")
                 );
+                resp.setStatus(201);
+                resp.getWriter().write(result.toString());
+                return;
             } else if ("/login".equals(path)) {
-                token = authService.login(body.getString("email"), body.getString("password"));
+                token = authService.login(
+                    body.getString("email"),
+                    body.optString("smart_id", ""), // optString = "" if it's missing
+                    body.getString("password")
+                );
             } else {
                 resp.setStatus(404);
                 return;
