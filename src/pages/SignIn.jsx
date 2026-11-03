@@ -12,21 +12,22 @@ const signInRoles = Object.entries(ROLE_INFO).filter(([, info]) => info.showOnSi
 function SignIn() {
   const [role, setRole] = useState(ROLES.COMPANY_ADMIN);
   const [email, setEmail] = useState("");
+  const [smartId, setSmartId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Sends the email and password to the backend.
-  // If they are correct, the backend sends back a login token.
+  // Sends the email, Smart ID and password to the backend.
+  // If all three are correct, the backend sends back a login token.
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const data = await apiRequest("POST", "/api/auth/login", { email: email, password: password });
+      const data = await apiRequest("POST", "/api/auth/login", { email: email, smart_id: smartId, password: password });
       saveToken(data.token);
     } catch (err) {
-      setError(err.message); 
+      setError(err.message);
       return;
     }
 
@@ -72,7 +73,7 @@ function SignIn() {
                 </button>
               ))}
           </div>
-            
+
             <label>
               Email
               <input
@@ -85,7 +86,12 @@ function SignIn() {
 
             <label>
               Smart ID
-              <input type="text" required />
+              <input
+                type="text"
+                value={smartId}
+                onChange={(e) => setSmartId(e.target.value)}
+                required
+              />
             </label>
 
             <label>
