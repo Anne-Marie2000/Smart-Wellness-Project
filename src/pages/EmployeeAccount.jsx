@@ -148,8 +148,9 @@ function EmployeeAccount() {
               <div className="success-check">✓</div>
 
               <h2>Account Created</h2>
-
-
+              <p>
+                Your employee account has been successfully created.
+              </p>
               <p>
                 Your Smart ID is <strong>{smartId}</strong>.
                 Keep it. You need it with your email and password to sign in.
