@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RequireRole from './components/RequireRole';
-
+import ComingSoon from './pages/ComingSoon';
 import AccommodationsBenefits from './pages/AccommodationsBenefits';
 import EmployeeManagement from './pages/EmployeeManagement';
+
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
 import WellnessEvents from './pages/WellnessEvents';
 import EducationMaterials from './pages/EducationMaterials';
