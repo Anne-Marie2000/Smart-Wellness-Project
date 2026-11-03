@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RequireRole from './components/RequireRole';
 import ComingSoon from './pages/ComingSoon';
+import ForgotSmartId from './pages/ForgotSmartID';
 import AccommodationsBenefits from './pages/AccommodationsBenefits';
 import EmployeeManagement from './pages/EmployeeManagement';
 
@@ -38,13 +39,15 @@ export default function App() {
         <Route path="/education-materials" element={
           <RequireRole><EducationMaterials /></RequireRole>
         } />
-          
+
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/create-company" element={<CompanyAccount />} />
         <Route path="/create-leader" element={<LeaderAccount />} />
         <Route path="/create-employee" element={<EmployeeAccount />} />
         <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/forgot-smart-id" element={<ForgotSmartId />} />
 
+        {/* Each dashboard shows real data, so only its own role can open it */}
         <Route path="/company-dashboard" element={
           <RequireRole roles={['company_admin']}><CompanyDashboard /></RequireRole>
         } />
@@ -56,7 +59,6 @@ export default function App() {
         } />
 
         <Route path="/coming-soon" element={<ComingSoon />} />
-        
       </Routes>
     </BrowserRouter>
   );
