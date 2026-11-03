@@ -1,32 +1,36 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import EventChart from "../components/EventChart";
+import UpcomingEvents from "../components/UpcomingEvents";
+import { apiRequest } from "../api";
+
+// Leader dashboard.
+// Data comes from MySQL through the backend:
+// Every button opens a real page, or "Coming soon" for features not built yet.
 
 function LeaderDashboard() {
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [guides, setGuides] = useState([]);
+
+  // Load once when the page opens
+  useEffect(() => {
+    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
+    apiRequest("GET", "/api/resources?audience=manager").then(data => setGuides(data.resources));
+  }, []);
+
+  // "Lee Leader" -> "Lee"
+  const firstName = profile ? profile.full_name.split(" ")[0] : "";
+
   return (
     <div className="dashboard-page">
-      <header className="dashboard-nav">
-        <div className="dashboard-nav-inner">
-          <Link to="/" className="dashboard-logo">
-            <img src="/smart-wellness-logo.png" alt="Smart Wellness Canada" />
-          </Link>
-
-          <div className="dashboard-tabs">
-            <Link to="/company-dashboard">Company</Link>
-            <Link to="/leader-dashboard" className="active">
-              Leader
-            </Link>
-            <Link to="/employee-dashboard">Employee</Link>
-          </div>
-
-          <Link to="/" className="back-site">
-            ← Back to site
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="dashboard-container">
         <section className="dashboard-heading">
-          <h1>Welcome back, Ziya.</h1>
-          <p>Q3 program overview · 250 eligible employees</p>
+          <h1>Welcome back, {firstName}.</h1>
+          <p>{profile ? profile.company_name : ""} · Leader dashboard</p>
         </section>
 
         <section className="leader-top-grid">
@@ -37,10 +41,10 @@ function LeaderDashboard() {
             <div className="task-list">
               <div className="task-item">
                 <div>
-                  <h3>Share the Q3 wellness check-in</h3>
+                  <h3>Share the wellness check-in</h3>
                   <p>Encourage your team to complete the latest survey.</p>
                 </div>
-                <button>View</button>
+                <button onClick={() => navigate("/coming-soon")}>View</button>
               </div>
 
               <div className="task-item">
@@ -48,7 +52,7 @@ function LeaderDashboard() {
                   <h3>Promote upcoming events</h3>
                   <p>Share this month's wellness sessions with your team.</p>
                 </div>
-                <button>View</button>
+                <button onClick={() => navigate("/wellness-events")}>View</button>
               </div>
 
               <div className="task-item">
@@ -56,7 +60,7 @@ function LeaderDashboard() {
                   <h3>Review leader resources</h3>
                   <p>Use the latest guides for team conversations.</p>
                 </div>
-                <button>View</button>
+                <button onClick={() => navigate("/education-materials")}>View</button>
               </div>
             </div>
           </div>
@@ -64,24 +68,8 @@ function LeaderDashboard() {
           <div className="dashboard-card">
             <p className="card-label">SURVEYS</p>
             <h2>Required Surveys</h2>
-
-            <div className="survey-list">
-              <div className="survey-item">
-                <div>
-                  <h3>Q3 Wellness Check-In</h3>
-                  <p>Due this week</p>
-                </div>
-                <span className="status-badge">Open</span>
-              </div>
-
-              <div className="survey-item">
-                <div>
-                  <h3>Leader Experience Survey</h3>
-                  <p>5 minute survey</p>
-                </div>
-                <span className="status-badge">Open</span>
-              </div>
-            </div>
+            <p className="muted-text">Wellness surveys are planned for Sprint 3.</p>
+            <Link to="/coming-soon" className="text-button">Learn more →</Link>
           </div>
         </section>
 
@@ -89,34 +77,7 @@ function LeaderDashboard() {
           <div className="dashboard-card">
             <p className="card-label">UPCOMING</p>
             <h2>Webinars &amp; Events</h2>
-
-            <div className="event-list">
-              <div className="event-row">
-                <div className="event-date">
-                  <strong>12</strong>
-                  <span>OCT</span>
-                </div>
-
-                <div>
-                  <h3>Supporting Employees Through Midlife</h3>
-                  <p>12:00 PM · Virtual</p>
-                </div>
-              </div>
-
-              <div className="event-row">
-                <div className="event-date">
-                  <strong>20</strong>
-                  <span>OCT</span>
-                </div>
-
-                <div>
-                  <h3>Building a Supportive Workplace</h3>
-                  <p>1:00 PM · Virtual</p>
-                </div>
-              </div>
-            </div>
-
-            <button className="text-button">View All Events →</button>
+            <UpcomingEvents />
           </div>
 
           <div className="dashboard-card">
@@ -124,23 +85,15 @@ function LeaderDashboard() {
             <h2>Guides &amp; Scripts</h2>
 
             <div className="resource-list">
-              <div className="resource-item">
-                <h3>Starting a Supportive Conversation</h3>
-                <p>A simple guide for speaking with team members.</p>
-                <button>Open Guide →</button>
-              </div>
+              {guides.length === 0 && <p>No guides yet.</p>}
 
-              <div className="resource-item">
-                <h3>Workplace Accommodation Guide</h3>
-                <p>Helpful steps for responding to accommodation needs.</p>
-                <button>Open Guide →</button>
-              </div>
-
-              <div className="resource-item">
-                <h3>Manager Conversation Scripts</h3>
-                <p>Examples for common workplace wellness conversations.</p>
-                <button>Open Guide →</button>
-              </div>
+              {guides.slice(0, 3).map(guide => (
+                <div className="resource-item" key={guide.id}>
+                  <h3>{guide.title}</h3>
+                  <p>{guide.category}</p>
+                  <button onClick={() => navigate("/education-materials")}>Open Guide →</button>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -152,19 +105,19 @@ function LeaderDashboard() {
               <div>
                 <h3>Wellness Coaching</h3>
                 <p>Connect employees with personalized wellness support.</p>
-                <button>Learn More →</button>
+                <button onClick={() => navigate("/coming-soon")}>Learn More →</button>
               </div>
 
               <div>
                 <h3>Employee Resources</h3>
                 <p>Find educational resources you can share with your team.</p>
-                <button>View Resources →</button>
+                <button onClick={() => navigate("/education-materials")}>View Resources →</button>
               </div>
 
               <div>
                 <h3>Workplace Support</h3>
-                <p>Explore tools for creating a more supportive workplace.</p>
-                <button>Explore →</button>
+                <p>See the accommodations and benefits your team can use.</p>
+                <button onClick={() => navigate("/accommodations-benefits")}>Explore →</button>
               </div>
             </div>
           </div>
@@ -172,27 +125,8 @@ function LeaderDashboard() {
 
         <section className="dashboard-card" style={{ marginTop: "24px" }}>
           <p className="card-label">ENGAGEMENT</p>
-          <h2>Participation Trend</h2>
-          <p className="muted-text">Monthly wellness program participation</p>
-
-          <div className="chart-placeholder">
-            <div className="chart-bars">
-              <div className="chart-bar bar-one"></div>
-              <div className="chart-bar bar-two"></div>
-              <div className="chart-bar bar-three"></div>
-              <div className="chart-bar bar-four"></div>
-              <div className="chart-bar bar-five"></div>
-              <div className="chart-bar bar-six"></div>
-            </div>
-            <div className="chart-months">
-              <span>Apr</span>
-              <span>May</span>
-              <span>Jun</span>
-              <span>Jul</span>
-              <span>Aug</span>
-              <span>Sep</span>
-            </div>
-          </div>
+          <h2>People Who Joined Each Event</h2>
+          <EventChart />
         </section>
       </main>
     </div>
