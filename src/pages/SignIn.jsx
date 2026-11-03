@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { ROLES, ROLE_INFO, dashboardFor } from "../roles";
 import { apiRequest, saveToken, getRole, signOut } from "../api";
@@ -105,7 +105,9 @@ function SignIn() {
             </label>
 
             <div className="forgot-password">
-              <a href="#">Forgot Password?</a>
+              <Link to="/forgot-smart-id">Forgot Smart ID?</Link>
+              {" · "}
+              <Link to="/coming-soon">Forgot Password?</Link>
             </div>
 
             {error && <p className="form-error">{error}</p>}
