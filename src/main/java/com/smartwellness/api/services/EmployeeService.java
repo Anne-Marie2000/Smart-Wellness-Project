@@ -15,7 +15,7 @@ import java.util.Set;
  * can never see or change another company's people. Admins can only
  * manage "employee" and "leader" accounts, never other admins.
  *
- * Every change is also written to employee_audit_log (task 10).
+ * Every change is also written to employee_audit_log.
  */
 public class EmployeeService {
     private static final Set<String> MANAGED_ROLES = Set.of("employee", "leader");
@@ -25,7 +25,6 @@ public class EmployeeService {
         this.db = db;
     }
 
-    // Task 6
     public JSONArray list(int companyId) throws SQLException {
         // LEFT JOIN smart_ids adds each person's Smart ID, so the admin can give it to them
         String sql = "SELECT users.id, users.email, users.full_name, users.role, users.is_active, users.created_at, " +
@@ -40,7 +39,6 @@ public class EmployeeService {
         }
     }
 
-    // Task 7
     public int create(int companyId, int actorId, String email, String fullName, String role, String tempPassword)
             throws SQLException {
         checkEmail(email);
@@ -95,7 +93,7 @@ public class EmployeeService {
         }
     }
 
-    // Task 8. Any of the three fields can be null = leave it as it was.
+    // Any of the three fields can be null = leave it as it was.
     public void update(int companyId, int actorId, int targetId, String fullName, String email, String role)
             throws SQLException {
         Connection conn = db.getConnection();
@@ -151,7 +149,7 @@ public class EmployeeService {
         }
     }
 
-    // Task 9. We deactivate instead of deleting so history (event sign-ups,
+    // We deactivate instead of deleting so history (event sign-ups,
     // survey answers, the audit log) stays intact. RequestAuth checks
     // is_active on every request, so a deactivated person is locked out
     // straight away even if their login token hasn't expired yet.
@@ -188,7 +186,7 @@ public class EmployeeService {
         }
     }
 
-    // Task 10: the admin can read the log for their own company
+    // The admin can read the log for their own company
     public JSONArray auditLog(int companyId) throws SQLException {
         String sql = "SELECT a.id, a.action, a.details, a.created_at, " +
                      "actor.full_name AS changed_by, target.full_name AS employee " +
@@ -196,6 +194,34 @@ public class EmployeeService {
                      "JOIN users actor ON actor.id = a.actor_user_id " +
                      "JOIN users target ON target.id = a.target_user_id " +
                      "WHERE a.company_id = ? ORDER BY a.id DESC LIMIT 200";
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, companyId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return JsonUtil.toArray(rs);
+            }
+        }
+    }
+
+    // Generate Smart ID button: makes a new, unused sign-up code for this company.
+    // The new person types it on the Create Employee / Leader Account page.
+    public String createSignUpCode(int companyId, String role) throws SQLException {
+        checkRole(role); // only "employee" or "leader"
+
+        String code = SmartIdService.generateCode();
+        String sql = "INSERT INTO smart_ids (code, company_id, intended_role) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+            ps.setString(1, code);
+            ps.setInt(2, companyId);
+            ps.setString(3, role);
+            ps.executeUpdate();
+        }
+        return code;
+    }
+
+    // The sign-up codes this company made that nobody has used yet (newest first)
+    public JSONArray unusedSignUpCodes(int companyId) throws SQLException {
+        String sql = "SELECT code, intended_role AS role, created_at FROM smart_ids " +
+                     "WHERE company_id = ? AND is_redeemed = 0 ORDER BY id DESC";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setInt(1, companyId);
             try (ResultSet rs = ps.executeQuery()) {
