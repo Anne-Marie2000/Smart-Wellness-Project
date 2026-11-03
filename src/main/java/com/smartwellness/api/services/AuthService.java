@@ -77,6 +77,7 @@ public class AuthService {
         }
 
         // code is single-use, so lock it after we use it
+        // (it also becomes this person's Smart ID for signing in)
         smartIdService.markRedeemed(smartIdId, userId);
 
         return issueToken(userId, role, companyId);
@@ -84,7 +85,7 @@ public class AuthService {
 
     // Create Company Account page: makes the company, then its first
     // Company Administrator account, and signs them in.
-    public String registerCompany(String companyName, String industry, String companySize, int employeeCount,
+    public JSONObject registerCompany(String companyName, String industry, String companySize, int employeeCount,
             String fullName, String jobTitle, String email, String phone, String password)
             throws SQLException, AuthException {
         Connection conn = db.getConnection();
@@ -132,7 +133,21 @@ public class AuthService {
             userId = keys.getInt(1);
         }
 
-        return issueToken(userId, "company_admin", companyId);
+        // 3. give the administrator their own Smart ID, which they need to sign in
+        String smartId = SmartIdService.generateCode();
+        String smartIdSql = "INSERT INTO smart_ids (code, company_id, intended_role, is_redeemed, redeemed_by_user_id) "
+                + "VALUES (?, ?, 'company_admin', 1, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(smartIdSql)) {
+            ps.setString(1, smartId);
+            ps.setInt(2, companyId);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        }
+
+        // send back the login token AND the new Smart ID (the page shows it to them)
+        return new JSONObject()
+                .put("token", issueToken(userId, "company_admin", companyId))
+                .put("smart_id", smartId);
     }
 
     // The signed-in person's name and company, for the dashboard greetings
@@ -151,19 +166,20 @@ public class AuthService {
         }
     }
 
-    public String login(String email, String password) throws SQLException, AuthException {
+    // Sign In page: the email, Smart ID and password must all match.
+    public String login(String email, String smartId, String password) throws SQLException, AuthException {
         String sql = "SELECT id, password_hash, role, company_id, is_active FROM users WHERE email = ?";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
 
             if (!rs.next()) {
-                throw new AuthException("Invalid email or password");
+                throw new AuthException("Invalid email, Smart ID or password");
             }
 
             String hash = rs.getString("password_hash");
             if (!PasswordUtil.verify(password, hash)) {
-                throw new AuthException("Invalid email or password");
+                throw new AuthException("Invalid email, Smart ID or password");
             }
 
             // checked after the password so a stranger can't use login to find out which accounts are deactivated
@@ -171,7 +187,28 @@ public class AuthService {
                 throw new AuthException("This account has been deactivated");
             }
 
-            return issueToken(rs.getInt("id"), rs.getString("role"), rs.getInt("company_id"));
+            int userId = rs.getInt("id");
+            String role = rs.getString("role");
+            int companyId = rs.getInt("company_id");
+
+            // the Smart ID must be the one given to this person.
+            // (Smart Wellness staff don't belong to a company, so they don't have one.)
+            if (!role.equals("smart_wellness_admin") && !hasSmartId(userId, smartId)) {
+                throw new AuthException("Invalid email, Smart ID or password");
+            }
+
+            return issueToken(userId, role, companyId);
+        }
+    }
+
+    // true if this Smart ID code belongs to this user
+    private boolean hasSmartId(int userId, String smartId) throws SQLException {
+        String sql = "SELECT id FROM smart_ids WHERE code = ? AND redeemed_by_user_id = ?";
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+            ps.setString(1, smartId);
+            ps.setInt(2, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); // true if a row was found
         }
     }
 
