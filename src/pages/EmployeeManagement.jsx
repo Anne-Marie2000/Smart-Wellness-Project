@@ -16,6 +16,11 @@ export default function EmployeeManagement() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // For the "Generate Smart ID" box
+  const [codeRole, setCodeRole] = useState('employee'); 
+  const [newCode, setNewCode] = useState('');         
+  const [unusedCodes, setUnusedCodes] = useState([]);   
+
   // Get the employees from the backend
   function loadEmployees() {
     apiRequest('GET', '/api/employees')
@@ -24,10 +29,30 @@ export default function EmployeeManagement() {
       .finally(() => setLoading(false));
   }
 
-  // Load the list once when the page opens
+  // Get the sign-up codes that nobody has used yet
+  function loadCodes() {
+    apiRequest('GET', '/api/employees/smart-ids')
+      .then(data => setUnusedCodes(data.smart_ids))
+      .catch(err => setError(err.message));
+  }
+
+  // Load the lists once when the page opens
   useEffect(() => {
     loadEmployees();
+    loadCodes();
   }, []);
+
+  // "Generate Smart ID" button: ask the backend for a new sign-up code
+  async function generateCode() {
+    setError('');
+    try {
+      const data = await apiRequest('POST', '/api/employees/smart-ids', { role: codeRole });
+      setNewCode(data.code); 
+      loadCodes();      
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   // Search box and role filter
   const filteredEmployees = employees.filter(employee => {
@@ -68,6 +93,19 @@ export default function EmployeeManagement() {
     setForm(emptyForm);
     setEditingId(null);
     setError('');
+  }
+
+  // Makes a "mailto:" link. Clicking it opens the admin's own email app
+  // with the message already written, so they only have to press Send.
+  function emailLink(toEmail, name, smartId) {
+    const subject = 'Your Smart Wellness Smart ID';
+    const body = 'Hi ' + name + ',\n\n' +
+      'Your Smart ID is: ' + smartId + '\n\n' +
+      'You need it, with your email and password, to sign in to Smart Wellness.';
+    // encodeURIComponent turns spaces and new lines into a safe format for links
+    return 'mailto:' + toEmail +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
   }
 
   // Fill the form with this employee's details so they can be changed
@@ -147,6 +185,12 @@ export default function EmployeeManagement() {
                       Edit
                     </button>
                     {' '}
+                    {employee.smart_id && (
+                      <a className="email-button" href={emailLink(employee.email, employee.full_name, employee.smart_id)}>
+                        Email Smart ID
+                      </a>
+                    )}
+                    {' '}
                     {employee.is_active && (
                       <button onClick={() => deactivateEmployee(employee)}>
                         Deactivate
@@ -215,6 +259,38 @@ export default function EmployeeManagement() {
             )}
           </div>
         </form>
+
+        {/* Generate Smart ID: make a sign-up code for a new employee or leader */}
+        <div className="employee-form">
+          <h2>Sign-Up Smart IDs</h2>
+          <p>
+            Make a Smart ID for a new employee or leader. Give it to them, and they
+            type it on the Create Account page. Each Smart ID works once.
+          </p>
+
+          <label htmlFor="code-role">Role</label>
+          <select id="code-role" value={codeRole} onChange={e => setCodeRole(e.target.value)}>
+            <option value="employee">Employee</option>
+            <option value="leader">Leader</option>
+          </select>
+
+          <div className="employee-form-buttons">
+            <button type="button" onClick={generateCode}>Generate Smart ID</button>
+          </div>
+
+          {/* only shown after the button is clicked */}
+          {newCode && <p className="new-code">New Smart ID: <strong>{newCode}</strong></p>}
+
+          <h3>Not used yet</h3>
+          {unusedCodes.length === 0 && <p>No unused Smart IDs.</p>}
+          <ul className="code-list">
+            {unusedCodes.map(code => (
+              <li key={code.code}>
+                <strong>{code.code}</strong> ({roleNames[code.role]})
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </main>
   );
