@@ -27,8 +27,11 @@ public class EmployeeService {
 
     // Task 6
     public JSONArray list(int companyId) throws SQLException {
-        String sql = "SELECT id, email, full_name, role, is_active, created_at FROM users " +
-                     "WHERE company_id = ? AND role IN ('employee','leader') ORDER BY full_name";
+        // LEFT JOIN smart_ids adds each person's Smart ID, so the admin can give it to them
+        String sql = "SELECT users.id, users.email, users.full_name, users.role, users.is_active, users.created_at, " +
+                     "smart_ids.code AS smart_id " +
+                     "FROM users LEFT JOIN smart_ids ON smart_ids.redeemed_by_user_id = users.id " +
+                     "WHERE users.company_id = ? AND users.role IN ('employee','leader') ORDER BY users.full_name";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
             ps.setInt(1, companyId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -69,6 +72,18 @@ public class EmployeeService {
                 keys.next();
                 newId = keys.getInt(1);
             }
+
+            // give the new person their own Smart ID, which they need to sign in
+            String smartIdSql = "INSERT INTO smart_ids (code, company_id, intended_role, is_redeemed, redeemed_by_user_id) "
+                    + "VALUES (?, ?, ?, 1, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(smartIdSql)) {
+                ps.setString(1, SmartIdService.generateCode());
+                ps.setInt(2, companyId);
+                ps.setString(3, role);
+                ps.setInt(4, newId);
+                ps.executeUpdate();
+            }
+
             audit(conn, companyId, actorId, newId, "CREATE", "Created " + role + " account for " + email);
             conn.commit();
             return newId;
