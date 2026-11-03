@@ -98,7 +98,7 @@ public class AuthService {
             }
         }
 
-        // 1. save the company
+        // Save the company
         String companySql = "INSERT INTO companies (company_name, industry, company_size, employee_count, "
                 + "contact_name, job_title, work_email, phone_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         int companyId;
@@ -118,7 +118,7 @@ public class AuthService {
             companyId = keys.getInt(1);
         }
 
-        // 2. save the person signing up as that company's administrator
+        // Save the person signing up as that company's administrator
         String userSql = "INSERT INTO users (email, password_hash, full_name, role, company_id) VALUES (?, ?, ?, 'company_admin', ?)";
         int userId;
         try (PreparedStatement ps = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS)) {
@@ -198,6 +198,40 @@ public class AuthService {
             }
 
             return issueToken(userId, role, companyId);
+        }
+    }
+
+    // Forgot Smart ID page: if the email and password are right,
+    // send back that person's Smart ID.
+    public String findSmartId(String email, String password) throws SQLException, AuthException {
+        String sql = "SELECT id, password_hash, role, is_active FROM users WHERE email = ?";
+        int userId;
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+
+            // same checks as signing in, so only the real person can see it
+            if (!rs.next() || !PasswordUtil.verify(password, rs.getString("password_hash"))) {
+                throw new AuthException("Invalid email or password");
+            }
+            if (!rs.getBoolean("is_active")) {
+                throw new AuthException("This account has been deactivated");
+            }
+            if (rs.getString("role").equals("smart_wellness_admin")) {
+                throw new AuthException("Smart Wellness staff don't need a Smart ID. Type anything in the Smart ID box.");
+            }
+            userId = rs.getInt("id");
+        }
+
+        // look up the Smart ID that belongs to this person
+        String codeSql = "SELECT code FROM smart_ids WHERE redeemed_by_user_id = ?";
+        try (PreparedStatement ps = db.getConnection().prepareStatement(codeSql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new AuthException("No Smart ID was found for this account. Please ask your company administrator.");
+            }
+            return rs.getString("code");
         }
     }
 
