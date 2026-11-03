@@ -45,9 +45,18 @@ export default function App() {
         <Route path="/create-employee" element={<EmployeeAccount />} />
         <Route path="/sign-in" element={<SignIn />} />
 
-        <Route path="/company-dashboard" element={<CompanyDashboard />} />
-        <Route path="/leader-dashboard" element={<LeaderDashboard />} />
-        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        <Route path="/company-dashboard" element={
+          <RequireRole roles={['company_admin']}><CompanyDashboard /></RequireRole>
+        } />
+        <Route path="/leader-dashboard" element={
+          <RequireRole roles={['leader']}><LeaderDashboard /></RequireRole>
+        } />
+        <Route path="/employee-dashboard" element={
+          <RequireRole roles={['employee']}><EmployeeDashboard /></RequireRole>
+        } />
+
+        <Route path="/coming-soon" element={<ComingSoon />} />
+        
       </Routes>
     </BrowserRouter>
   );
