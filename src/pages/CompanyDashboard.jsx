@@ -5,35 +5,62 @@ import EventChart from "../components/EventChart";
 import { apiRequest } from "../api";
 
 // Company Administrator dashboard.
-// Everything comes from MySQL through the backend:
-// Features that don't exist yet (wallet, surveys, feedback) say "Coming soon".
+// Every number on this page comes from the database (MySQL) through the backend:
+// Features we haven't built yet (wallet, surveys, feedback) link to "Coming soon".
 
 function CompanyDashboard() {
-  const [profile, setProfile] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [employees, setEmployees] = useState([]);
   const [events, setEvents] = useState([]);
-  const [roi, setRoi] = useState(null);
+  const [participation, setParticipation] = useState("-");
+  const [savings, setSavings] = useState("-");
 
-  // Load everything once when the page opens
+  // Load everything once, when the page opens
   useEffect(() => {
-    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
+    // your name and company
+    apiRequest("GET", "/api/auth/me").then(data => {
+      setFirstName(data.full_name.split(" ")[0]); // "Alex Admin" -> "Alex"
+      setCompanyName(data.company_name);
+    });
+
+    // the employees and the events
     apiRequest("GET", "/api/employees").then(data => setEmployees(data.employees));
     apiRequest("GET", "/api/events").then(data => setEvents(data.events));
-    // the ROI numbers need at least 5 employees, so this can fail - that's OK
-    apiRequest("GET", "/api/roi/retention").then(data => setRoi(data)).catch(() => setRoi(null));
+
+    // The ROI numbers need at least 5 employees.
+    // If there are fewer, the backend sends an error and we keep showing "-".
+    apiRequest("GET", "/api/roi/retention")
+      .then(data => {
+        setParticipation(data.participation_rate_percent + "%");
+        setSavings("$" + Math.round(data.projected_savings_cad));
+      })
+      .catch(() => {
+        setParticipation("-");
+        setSavings("-");
+      });
   }, []);
 
-  // Count things from the lists we got back
-  const activeCount = employees.filter(employee => employee.is_active).length;
+  // Count the active employees
+  let activeCount = 0;
+  for (const employee of employees) {
+    if (employee.is_active) {
+      activeCount = activeCount + 1;
+    }
+  }
 
+  // Add up the sign-ups, and count the events that are still coming up
   let signUps = 0;
-  events.forEach(event => {
-    signUps = signUps + event.registrations;
-  });
+  let upcomingCount = 0;
+  const today = new Date();
 
-  const upcomingCount = events.filter(
-    event => event.status !== "cancelled" && new Date(event.event_date) > new Date()
-  ).length;
+  for (const event of events) {
+    signUps = signUps + event.registrations;
+
+    if (event.status !== "cancelled" && new Date(event.event_date) > today) {
+      upcomingCount = upcomingCount + 1;
+    }
+  }
 
   return (
     <div className="dashboard-page">
@@ -41,8 +68,8 @@ function CompanyDashboard() {
 
       <main className="dashboard-container">
         <section className="dashboard-heading">
-          <h1>Welcome, {profile ? profile.company_name : ""}.</h1>
-          <p>Wellness program overview</p>
+          <h1>Welcome, {firstName}.</h1>
+          <p>{companyName} · Wellness program overview</p>
         </section>
 
         <section className="company-stats">
@@ -58,12 +85,12 @@ function CompanyDashboard() {
 
           <div className="stat-card">
             <p>PARTICIPATION</p>
-            <h2>{roi ? roi.participation_rate_percent + "%" : "-"}</h2>
+            <h2>{participation}</h2>
           </div>
 
           <div className="stat-card">
             <p>EST. SAVINGS</p>
-            <h2>{roi ? "$" + Math.round(roi.projected_savings_cad).toLocaleString() : "-"}</h2>
+            <h2>{savings}</h2>
           </div>
         </section>
 
