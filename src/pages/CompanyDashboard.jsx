@@ -1,131 +1,77 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import EventChart from "../components/EventChart";
+import { apiRequest } from "../api";
+
+// Company Administrator dashboard.
+// Everything comes from MySQL through the backend:
+// Features that don't exist yet (wallet, surveys, feedback) say "Coming soon".
 
 function CompanyDashboard() {
+  const [profile, setProfile] = useState(null);
+  const [employees, setEmployees] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [roi, setRoi] = useState(null);
+
+  // Load everything once when the page opens
+  useEffect(() => {
+    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
+    apiRequest("GET", "/api/employees").then(data => setEmployees(data.employees));
+    apiRequest("GET", "/api/events").then(data => setEvents(data.events));
+    // the ROI numbers need at least 5 employees, so this can fail - that's OK
+    apiRequest("GET", "/api/roi/retention").then(data => setRoi(data)).catch(() => setRoi(null));
+  }, []);
+
+  // Count things from the lists we got back
+  const activeCount = employees.filter(employee => employee.is_active).length;
+
+  let signUps = 0;
+  events.forEach(event => {
+    signUps = signUps + event.registrations;
+  });
+
+  const upcomingCount = events.filter(
+    event => event.status !== "cancelled" && new Date(event.event_date) > new Date()
+  ).length;
+
   return (
     <div className="dashboard-page">
-      <header className="dashboard-nav">
-        <div className="dashboard-nav-inner">
-          <Link to="/" className="dashboard-logo">
-            <img src="/smart-wellness-logo.png" alt="Smart Wellness Canada" />
-          </Link>
-
-          <div className="dashboard-tabs">
-            <Link to="/company-dashboard" className="active">
-              Company
-            </Link>
-            <Link to="/leader-dashboard">Leader</Link>
-            <Link to="/employee-dashboard">Employee</Link>
-          </div>
-
-          <Link to="/" className="back-site">
-            ← Back to site
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="dashboard-container">
         <section className="dashboard-heading">
-          <h1>Good morning, Acme HR.</h1>
-          <p>Q3 program overview · 250 eligible employees</p>
+          <h1>Welcome, {profile ? profile.company_name : ""}.</h1>
+          <p>Wellness program overview</p>
         </section>
 
         <section className="company-stats">
           <div className="stat-card">
-            <p>INVITED</p>
-            <h2>250</h2>
-          </div>
-
-          <div className="stat-card">
-            <p>REGISTERED</p>
-            <h2>212</h2>
+            <p>EMPLOYEES</p>
+            <h2>{employees.length}</h2>
           </div>
 
           <div className="stat-card">
             <p>ACTIVE</p>
-            <h2>171</h2>
+            <h2>{activeCount}</h2>
           </div>
 
           <div className="stat-card">
-            <p>EST. ROI YTD</p>
-            <h2>$1.42M</h2>
+            <p>PARTICIPATION</p>
+            <h2>{roi ? roi.participation_rate_percent + "%" : "-"}</h2>
+          </div>
+
+          <div className="stat-card">
+            <p>EST. SAVINGS</p>
+            <h2>{roi ? "$" + Math.round(roi.projected_savings_cad).toLocaleString() : "-"}</h2>
           </div>
         </section>
 
         <section className="dashboard-grid">
           <div className="dashboard-card adoption-card">
-            <div className="card-heading">
-              <div>
-                <p className="card-label">ENGAGEMENT</p>
-                <h2>Adoption Trend</h2>
-              </div>
-
-              <span>Last 6 months</span>
-            </div>
-
-            <div className="chart-placeholder">
-              <div className="chart-bars">
-                <div className="chart-bar bar-one"></div>
-                <div className="chart-bar bar-two"></div>
-                <div className="chart-bar bar-three"></div>
-                <div className="chart-bar bar-four"></div>
-                <div className="chart-bar bar-five"></div>
-                <div className="chart-bar bar-six"></div>
-              </div>
-
-              <div className="chart-months">
-                <span>Apr</span>
-                <span>May</span>
-                <span>Jun</span>
-                <span>Jul</span>
-                <span>Aug</span>
-                <span>Sep</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="dashboard-card">
-            <p className="card-label">SURVEYS</p>
-            <h2>Survey Completion</h2>
-
-            <div className="survey-row">
-              <div>
-                <span>Baseline</span>
-                <strong>78%</strong>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-fill baseline"></div>
-              </div>
-            </div>
-
-            <div className="survey-row">
-              <div>
-                <span>Q3 Check-In</span>
-                <strong>64%</strong>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-fill q3"></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="dashboard-card">
-            <p className="card-label">WALLET</p>
-            <h2>Wallet Funding</h2>
-
-            <div className="wallet-total">$42,300</div>
-            <p className="muted-text">Total credits funded this quarter</p>
-
-            <div className="small-stats">
-              <div>
-                <span>Used</span>
-                <strong>$31,860</strong>
-              </div>
-
-              <div>
-                <span>Remaining</span>
-                <strong>$10,440</strong>
-              </div>
-            </div>
+            <p className="card-label">ENGAGEMENT</p>
+            <h2>People Who Joined Each Event</h2>
+            <EventChart />
           </div>
 
           <div className="dashboard-card">
@@ -133,94 +79,56 @@ function CompanyDashboard() {
             <h2>Event Participation</h2>
 
             <div className="event-stat">
-              <strong>186</strong>
-              <span>registrations</span>
+              <strong>{signUps}</strong>
+              <span>sign-ups</span>
             </div>
 
             <div className="event-stat">
-              <strong>142</strong>
-              <span>attendees</span>
+              <strong>{events.length}</strong>
+              <span>events in total</span>
             </div>
 
             <div className="event-stat">
-              <strong>76%</strong>
-              <span>attendance rate</span>
+              <strong>{upcomingCount}</strong>
+              <span>upcoming events</span>
             </div>
           </div>
 
-          <div className="dashboard-card feedback-card">
+          <div className="dashboard-card">
+            <p className="card-label">SURVEYS</p>
+            <h2>Survey Completion</h2>
+            <p className="muted-text">Wellness surveys are planned for Sprint 3.</p>
+            <Link to="/coming-soon" className="text-button">Learn more →</Link>
+          </div>
+
+          <div className="dashboard-card">
+            <p className="card-label">WALLET</p>
+            <h2>Wallet Funding</h2>
+            <p className="muted-text">Employer wellness credits are coming soon.</p>
+            <Link to="/coming-soon" className="text-button">Learn more →</Link>
+          </div>
+
+          <div className="dashboard-card">
             <p className="card-label">EMPLOYEE VOICE</p>
             <h2>Anonymous Feedback</h2>
-
-            <blockquote>
-              “The resources have made it easier to understand what support is
-              available and where to find it.”
-            </blockquote>
-
-            <p className="muted-text">
-              Feedback is anonymous and shown without identifying information.
-            </p>
+            <p className="muted-text">Anonymous feedback is planned for Sprint 3.</p>
+            <Link to="/coming-soon" className="text-button">Learn more →</Link>
           </div>
 
-          <div className="dashboard-card baseline-card">
-            <p className="card-label">WORKFORCE INSIGHTS</p>
-            <h2>Workforce Baseline</h2>
-
-            <div className="baseline-grid">
-              <div>
-                <strong>68%</strong>
-                <span>report symptoms</span>
-              </div>
-
-              <div>
-                <strong>51%</strong>
-                <span>report work impact</span>
-              </div>
-
-              <div>
-                <strong>22%</strong>
-                <span>feel supported</span>
-              </div>
-
-              <div>
-                <strong>94%</strong>
-                <span>would recommend support</span>
-              </div>
-            </div>
+          <div className="dashboard-card">
+            <p className="card-label">TEAM</p>
+            <h2>Manage Employees</h2>
+            <p className="muted-text">Add, edit or deactivate employee accounts.</p>
+            <Link to="/employee-management" className="text-button">Go to Employees →</Link>
           </div>
         </section>
 
         <section className="dashboard-card" style={{ marginTop: "24px" }}>
-          <p className="card-label">ENGAGEMENT</p>
-          <h2>Participation Trend</h2>
-          <p className="muted-text">Monthly wellness program participation</p>
-
-          <div className="chart-placeholder">
-            <div className="chart-bars">
-              <div className="chart-bar bar-one"></div>
-              <div className="chart-bar bar-two"></div>
-              <div className="chart-bar bar-three"></div>
-              <div className="chart-bar bar-four"></div>
-              <div className="chart-bar bar-five"></div>
-              <div className="chart-bar bar-six"></div>
-            </div>
-            <div className="chart-months">
-              <span>Apr</span>
-              <span>May</span>
-              <span>Jun</span>
-              <span>Jul</span>
-              <span>Aug</span>
-              <span>Sep</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="dashboard-card" style={{ marginTop: "24px" }}>
-          <p className="card-label">EVENT MANAGEMENT</p>
-          <h2>Manage Wellness Events</h2>
-          <p className="muted-text">Create and edit upcoming wellness events.</p>
+          <p className="card-label">WELLNESS EVENTS</p>
+          <h2>Wellness Events</h2>
+          <p className="muted-text">See your organization's wellness events.</p>
           <Link to="/wellness-events" className="back-site">
-            Manage Events →
+            View Events →
           </Link>
         </section>
       </main>
