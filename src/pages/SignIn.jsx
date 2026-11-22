@@ -1,20 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { ROLES, ROLE_INFO, dashboardFor } from "../roles";
-import { apiRequest, saveToken, getRole, signOut } from "../api";
+import { dashboardFor } from "../roles";
+import { apiRequest, saveToken, getRole } from "../api";
 
-//Role buttons come from src/roles.js
-const signInRoles = Object.entries(ROLE_INFO).filter(([, info]) => info.showOnSignIn);
-
-//Signs in to a specific role on goes to the roles dashboard,
-// so a new role only has to be added there
+// The backend checks the account and its role after sign in.
 function SignIn() {
-  const [role, setRole] = useState(ROLES.COMPANY_ADMIN);
   const [email, setEmail] = useState("");
   const [smartId, setSmartId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // Sends the email, Smart ID and password to the backend.
@@ -22,25 +18,19 @@ function SignIn() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
 
     try {
       const data = await apiRequest("POST", "/api/auth/login", { email: email, smart_id: smartId, password: password });
       saveToken(data.token);
     } catch (err) {
       setError(err.message);
+      setSubmitting(false);
       return;
     }
 
-    // The token says what kind of account this really is
+    // Send the person to the right dashboard using their account role.
     const accountRole = getRole();
-
-    // Check they clicked the right account type button
-    if (ROLE_INFO[accountRole].showOnSignIn && accountRole !== role) {
-      signOut();
-      setError("This is a " + ROLE_INFO[accountRole].label + " account. Please choose that button above.");
-      return;
-    }
-
     navigate(dashboardFor(accountRole));
   };
 
@@ -59,21 +49,6 @@ function SignIn() {
           </p>
 
           <form className="sign-in-card" onSubmit={handleSignIn}>
-            <p className="role-label">Choose your account type</p>
-
-          <div className="role-buttons">
-            {signInRoles.map(([key, info]) => (
-              <button
-                key={key}
-                type="button"
-                className={role === key ? "role-button active" : "role-button"}
-                onClick={() => setRole(key)}
-                >
-                {info.label}
-                </button>
-              ))}
-          </div>
-
             <label>
               Email
               <input
@@ -106,14 +81,12 @@ function SignIn() {
 
             <div className="forgot-password">
               <Link to="/forgot-smart-id">Forgot Smart ID?</Link>
-              {" · "}
-              <Link to="/coming-soon">Forgot Password?</Link>
             </div>
 
             {error && <p className="form-error">{error}</p>}
 
-            <button type="submit" className="sign-in-button">
-              SIGN IN
+            <button type="submit" className="sign-in-button" disabled={submitting}>
+              {submitting ? "SIGNING IN..." : "SIGN IN"}
             </button>
           </form>
         </div>

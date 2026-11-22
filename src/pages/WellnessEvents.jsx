@@ -16,7 +16,8 @@ function showDate(date) {
 
 export default function WellnessEvents() {
   const role = getRole();
-  const isAdmin = role === 'smart_wellness_admin';         
+  const isPlatformAdmin = role === 'smart_wellness_admin';
+  const isAdmin = isPlatformAdmin;
   const canJoin = role === 'employee' || role === 'leader';
 
   const [events, setEvents] = useState([]);
@@ -24,6 +25,7 @@ export default function WellnessEvents() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // Smart Wellness Admins work with many companies, so they choose which one
   const [companyId, setCompanyId] = useState('1');
@@ -31,7 +33,7 @@ export default function WellnessEvents() {
   // Get the events from the backend.
   // Admins have to say which company; everyone else gets their own company's events.
   function loadEvents(company) {
-    const url = getRole() === 'smart_wellness_admin' ? `/api/events?company_id=${company}` : '/api/events';
+    const url = isPlatformAdmin ? `/api/events?company_id=${company}` : '/api/events';
 
     apiRequest('GET', url)
       .then(data => {
@@ -44,13 +46,16 @@ export default function WellnessEvents() {
 
   // Load the events once when the page opens
   useEffect(() => {
+    // The first load uses the default company for platform admins.
     loadEvents('1');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Create a new event, or save changes to an existing one
   async function saveEvent(e) {
     e.preventDefault();
     setError('');
+    setSaving(true);
 
     const details = {
       title: form.title.trim(),
@@ -62,13 +67,15 @@ export default function WellnessEvents() {
       if (editingId !== null) {
         await apiRequest('PUT', `/api/events/${editingId}`, details);
       } else {
-        details.company_id = Number(companyId);
+        if (isPlatformAdmin) details.company_id = Number(companyId);
         await apiRequest('POST', '/api/events', details);
       }
       resetForm();
       loadEvents(companyId);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -88,7 +95,7 @@ export default function WellnessEvents() {
   }
 
   async function cancelEvent(event) {
-    if (!window.confirm(`Are you sure you want to cancel "${event.title}"?`)) {
+    if (!window.confirm(`Cancel "${event.title}"? People who joined will no longer be able to attend.`)) {
       return;
     }
     try {
@@ -118,7 +125,7 @@ export default function WellnessEvents() {
           <p>Explore and manage upcoming wellness activities.</p>
         </div>
 
-        {isAdmin && (
+        {isPlatformAdmin && (
           <div className="employee-tools">
             <label htmlFor="company-id">Company ID</label>
             <input
@@ -197,8 +204,8 @@ export default function WellnessEvents() {
             </div>
 
             <div className="wellness-form-buttons">
-              <button type="submit">
-                {editingId !== null ? 'Save Changes' : 'Create Event'}
+              <button type="submit" disabled={saving}>
+                {saving ? 'Saving...' : editingId !== null ? 'Save Changes' : 'Create Event'}
               </button>
               {editingId !== null && (
                 <button type="button" onClick={resetForm}>Cancel Editing</button>

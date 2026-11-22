@@ -6,18 +6,18 @@ import { apiRequest } from "../api";
 
 // Employee dashboard.
 // Data comes from MySQL through the backend:
-// Every button opens a real page, or "Coming soon" for features not built yet
-// (AI assistant, coaching, wallet, surveys, community board).
+// Shows resources and activities for the employee's company.
 
 function EmployeeDashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [guides, setGuides] = useState([]);
+  const [error, setError] = useState("");
 
   // Load once when the page opens
   useEffect(() => {
-    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
-    apiRequest("GET", "/api/resources?audience=employee").then(data => setGuides(data.resources));
+    apiRequest("GET", "/api/auth/me").then(data => setProfile(data)).catch(err => setError(err.message));
+    apiRequest("GET", "/api/resources?audience=employee").then(data => setGuides(data.resources)).catch(err => setError(err.message));
   }, []);
 
   // "Emma Employee" -> "Emma"
@@ -28,6 +28,7 @@ function EmployeeDashboard() {
       <Navbar />
 
       <main className="dashboard-container employee-dashboard">
+        {error && <p className="form-error">{error}</p>}
         <section className="employee-heading">
           <p className="card-label">YOUR WELLNESS</p>
 
@@ -36,17 +37,17 @@ function EmployeeDashboard() {
           <p>Today's a good day for something small and kind.</p>
 
           <div className="heading-buttons">
-            <button onClick={() => navigate("/coming-soon")}>Ask AI</button>
-            <button onClick={() => navigate("/coming-soon")}>Book Coaching</button>
+            <button onClick={() => navigate("/wellness-chat")}>Ask AI</button>
+            <button onClick={() => navigate("/contact")}>Ask About Coaching</button>
           </div>
         </section>
 
         <section className="employee-top-grid">
           <div className="dashboard-card wallet-card">
-            <p className="card-label">DIGITAL WALLET</p>
-            <h2>Wellness Credits</h2>
-            <p>Credits from your employer for wellness services are coming soon.</p>
-            <button className="text-button" onClick={() => navigate("/coming-soon")}>Learn more →</button>
+            <p className="card-label">WORKPLACE SUPPORT</p>
+            <h2>Your Benefits</h2>
+            <p>Find the accommodations and benefits available through your employer.</p>
+            <button className="text-button" onClick={() => navigate("/accommodations-benefits")}>View Benefits →</button>
           </div>
 
           <div className="dashboard-card recommended-card">
@@ -71,7 +72,7 @@ function EmployeeDashboard() {
             <p className="card-label">PERSONAL SUPPORT</p>
             <h2>AI Wellness Assistant</h2>
             <p>Ask questions and find wellness resources based on what you need today.</p>
-            <button className="dashboard-action-button" onClick={() => navigate("/coming-soon")}>
+            <button className="dashboard-action-button" onClick={() => navigate("/wellness-chat")}>
               Ask the Wellness Assistant
             </button>
           </div>
@@ -85,15 +86,8 @@ function EmployeeDashboard() {
           <div className="dashboard-card">
             <p className="card-label">SURVEYS</p>
             <h2>Required Surveys</h2>
-            <p>Wellness surveys are planned for Sprint 3.</p>
-            <button className="text-button" onClick={() => navigate("/coming-soon")}>Start Survey →</button>
-          </div>
-
-          <div className="dashboard-card">
-            <p className="card-label">COMMUNITY</p>
-            <h2>Community Board</h2>
-            <p>Connect with wellness conversations and see what others are sharing.</p>
-            <button className="text-button" onClick={() => navigate("/coming-soon")}>Visit Community →</button>
+            <p>Share feedback about your workplace wellness experience.</p>
+            <button className="text-button" onClick={() => navigate("/surveys")}>Start Survey →</button>
           </div>
 
           <div className="dashboard-card resources-card">

@@ -6,7 +6,7 @@ import { apiRequest } from "../api";
 
 // Company Administrator dashboard.
 // Every number on this page comes from the database (MySQL) through the backend:
-// Features we haven't built yet (wallet, surveys, feedback) link to "Coming soon".
+// Shows information about this company's wellness program.
 
 function CompanyDashboard() {
   const [firstName, setFirstName] = useState("");
@@ -15,6 +15,7 @@ function CompanyDashboard() {
   const [events, setEvents] = useState([]);
   const [participation, setParticipation] = useState("-");
   const [savings, setSavings] = useState("-");
+  const [error, setError] = useState("");
 
   // Load everything once, when the page opens
   useEffect(() => {
@@ -22,11 +23,11 @@ function CompanyDashboard() {
     apiRequest("GET", "/api/auth/me").then(data => {
       setFirstName(data.full_name.split(" ")[0]); // "Alex Admin" -> "Alex"
       setCompanyName(data.company_name);
-    });
+    }).catch(err => setError(err.message));
 
     // the employees and the events
-    apiRequest("GET", "/api/employees").then(data => setEmployees(data.employees));
-    apiRequest("GET", "/api/events").then(data => setEvents(data.events));
+    apiRequest("GET", "/api/employees").then(data => setEmployees(data.employees)).catch(err => setError(err.message));
+    apiRequest("GET", "/api/events").then(data => setEvents(data.events)).catch(err => setError(err.message));
 
     // The ROI numbers need at least 5 employees.
     // If there are fewer, the backend sends an error and we keep showing "-".
@@ -67,6 +68,7 @@ function CompanyDashboard() {
       <Navbar />
 
       <main className="dashboard-container">
+        {error && <p className="form-error">{error}</p>}
         <section className="dashboard-heading">
           <h1>Welcome, {firstName}.</h1>
           <p>{companyName} · Wellness program overview</p>
@@ -124,22 +126,8 @@ function CompanyDashboard() {
           <div className="dashboard-card">
             <p className="card-label">SURVEYS</p>
             <h2>Survey Completion</h2>
-            <p className="muted-text">Wellness surveys are planned for Sprint 3.</p>
-            <Link to="/coming-soon" className="text-button">Learn more →</Link>
-          </div>
-
-          <div className="dashboard-card">
-            <p className="card-label">WALLET</p>
-            <h2>Wallet Funding</h2>
-            <p className="muted-text">Employer wellness credits are coming soon.</p>
-            <Link to="/coming-soon" className="text-button">Learn more →</Link>
-          </div>
-
-          <div className="dashboard-card">
-            <p className="card-label">EMPLOYEE VOICE</p>
-            <h2>Anonymous Feedback</h2>
-            <p className="muted-text">Anonymous feedback is planned for Sprint 3.</p>
-            <Link to="/coming-soon" className="text-button">Learn more →</Link>
+            <p className="muted-text">Review anonymous feedback from your company's wellness surveys.</p>
+            <Link to="/surveys" className="text-button">View Surveys →</Link>
           </div>
 
           <div className="dashboard-card">

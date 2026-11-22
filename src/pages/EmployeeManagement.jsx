@@ -15,6 +15,7 @@ export default function EmployeeManagement() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // For the "Generate Smart ID" box
   const [codeRole, setCodeRole] = useState('employee'); 
@@ -67,6 +68,7 @@ export default function EmployeeManagement() {
   async function saveEmployee(e) {
     e.preventDefault();
     setError('');
+    setSaving(true);
 
     const details = {
       full_name: form.name.trim(),
@@ -86,6 +88,8 @@ export default function EmployeeManagement() {
     } catch (err) {
       // the backend explains what's wrong, e.g. "An account with this email already exists"
       setError(err.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -116,7 +120,7 @@ export default function EmployeeManagement() {
   }
 
   async function deactivateEmployee(employee) {
-    if (!window.confirm(`Are you sure you want to deactivate ${employee.full_name}?`)) {
+    if (!window.confirm(`Remove ${employee.full_name}'s access? Their account will be deactivated, but past records will be kept.`)) {
       return;
     }
     try {
@@ -193,7 +197,7 @@ export default function EmployeeManagement() {
                     {' '}
                     {employee.is_active && (
                       <button onClick={() => deactivateEmployee(employee)}>
-                        Deactivate
+                        Remove Access
                       </button>
                     )}
                   </td>
@@ -250,8 +254,8 @@ export default function EmployeeManagement() {
           )}
 
           <div className="employee-form-buttons">
-            <button type="submit">
-              {editingId !== null ? 'Save Changes' : 'Add Employee'}
+            <button type="submit" disabled={saving}>
+              {saving ? 'Saving...' : editingId !== null ? 'Save Changes' : 'Add Employee'}
             </button>
 
             {editingId !== null && (

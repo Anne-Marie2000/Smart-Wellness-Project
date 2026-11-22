@@ -7,17 +7,18 @@ import { apiRequest } from "../api";
 
 // Leader dashboard.
 // Data comes from MySQL through the backend:
-// Every button opens a real page, or "Coming soon" for features not built yet.
+// Resources and events are shared with employees.
 
 function LeaderDashboard() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [guides, setGuides] = useState([]);
+  const [error, setError] = useState("");
 
   // Load once when the page opens
   useEffect(() => {
-    apiRequest("GET", "/api/auth/me").then(data => setProfile(data));
-    apiRequest("GET", "/api/resources?audience=manager").then(data => setGuides(data.resources));
+    apiRequest("GET", "/api/auth/me").then(data => setProfile(data)).catch(err => setError(err.message));
+    apiRequest("GET", "/api/resources?audience=manager").then(data => setGuides(data.resources)).catch(err => setError(err.message));
   }, []);
 
   // "Lee Leader" -> "Lee"
@@ -28,6 +29,7 @@ function LeaderDashboard() {
       <Navbar />
 
       <main className="dashboard-container">
+        {error && <p className="form-error">{error}</p>}
         <section className="dashboard-heading">
           <h1>Welcome back, {firstName}.</h1>
           <p>{profile ? profile.company_name : ""} · Leader dashboard</p>
@@ -44,7 +46,7 @@ function LeaderDashboard() {
                   <h3>Share the wellness check-in</h3>
                   <p>Encourage your team to complete the latest survey.</p>
                 </div>
-                <button onClick={() => navigate("/coming-soon")}>View</button>
+                <button onClick={() => navigate("/surveys")}>View</button>
               </div>
 
               <div className="task-item">
@@ -68,8 +70,8 @@ function LeaderDashboard() {
           <div className="dashboard-card">
             <p className="card-label">SURVEYS</p>
             <h2>Required Surveys</h2>
-            <p className="muted-text">Wellness surveys are planned for Sprint 3.</p>
-            <Link to="/coming-soon" className="text-button">Learn more →</Link>
+            <p className="muted-text">Check the latest workplace wellness surveys.</p>
+            <Link to="/surveys" className="text-button">View Surveys →</Link>
           </div>
         </section>
 
@@ -105,7 +107,7 @@ function LeaderDashboard() {
               <div>
                 <h3>Wellness Coaching</h3>
                 <p>Connect employees with personalized wellness support.</p>
-                <button onClick={() => navigate("/coming-soon")}>Learn More →</button>
+                <button onClick={() => navigate("/contact")}>Contact Us →</button>
               </div>
 
               <div>

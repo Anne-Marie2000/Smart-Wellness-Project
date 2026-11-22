@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest, getRole, signOut } from "../api";
@@ -24,7 +25,7 @@ function Navbar() {
   }
 
   return (
-    <header className="navbar">
+    <header className={role ? "navbar" : "navbar navbar-public"}>
       <div className="nav-container">
 
         <Link to="/" className="logo">
@@ -34,19 +35,41 @@ function Navbar() {
         {role ? (
           <nav className="nav-links">
             <Link to={dashboardFor(role)}>Dashboard</Link>
-            {role === "company_admin" && <Link to="/employee-management">Employees</Link>}
+            {role === "company_admin" && (
+              <Link to="/employee-management">Employees</Link>
+            )}
             <Link to="/wellness-events">Events</Link>
-            {role !== "smart_wellness_admin" && <Link to="/accommodations-benefits">Benefits</Link>}
+            {role !== "smart_wellness_admin" && (
+              <Link to="/accommodations-benefits">Benefits</Link>
+            )}
             <Link to="/education-materials">Education</Link>
+            <Link to="/surveys">Surveys</Link>
+            <Link to="/contact">Contact</Link>
           </nav>
         ) : (
           <nav className="nav-links">
             <Link to="/">Home</Link>
-            <Link to="/coming-soon">Workplace Services</Link>
-            <Link to="/coming-soon">Meal Plans & Coaching</Link>
-            <Link to="/coming-soon">About</Link>
-            <Link to="/coming-soon">Contact</Link>
           </nav>
+        )}
+
+        {role && (
+          <details className="mobile-menu">
+            <summary>Menu</summary>
+
+            <nav>
+              <Link to={dashboardFor(role)}>Dashboard</Link>
+              {role === "company_admin" && (
+                <Link to="/employee-management">Employees</Link>
+              )}
+              <Link to="/wellness-events">Events</Link>
+              {role !== "smart_wellness_admin" && (
+                <Link to="/accommodations-benefits">Benefits</Link>
+              )}
+              <Link to="/education-materials">Education</Link>
+              <Link to="/surveys">Surveys</Link>
+              <Link to="/contact">Contact</Link>
+            </nav>
+          </details>
         )}
 
         <div className="nav-actions">
@@ -65,13 +88,12 @@ function Navbar() {
                 Sign In
               </Link>
 
-              <Link to="/coming-soon" className="nav-btn">
-                Book a Demo
+              <Link to="/contact" className="nav-btn">
+                Contact Us
               </Link>
             </>
           )}
         </div>
-
       </div>
     </header>
   );

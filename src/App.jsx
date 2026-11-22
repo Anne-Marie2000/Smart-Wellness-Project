@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RequireRole from './components/RequireRole';
-import ComingSoon from './pages/ComingSoon';
 import ForgotSmartId from './pages/ForgotSmartID';
 import AccommodationsBenefits from './pages/AccommodationsBenefits';
 import EmployeeManagement from './pages/EmployeeManagement';
 
 import ExecutiveDashboard from './pages/ExecutiveDashboard';
 import WellnessEvents from './pages/WellnessEvents';
+import WellnessChat from './pages/WellnessChat';
+import Surveys from './pages/Surveys';
+import ContactUs from './pages/ContactUs';
 import EducationMaterials from './pages/EducationMaterials';
 
 import CreateAccount from './pages/CreateAccount';
@@ -36,6 +38,11 @@ export default function App() {
         <Route path="/wellness-events" element={
           <RequireRole><WellnessEvents /></RequireRole>
         } />
+        <Route path="/wellness-chat" element={
+          <RequireRole roles={['employee', 'leader', 'company_admin']}><WellnessChat /></RequireRole>
+        } />
+        <Route path="/surveys" element={<RequireRole><Surveys /></RequireRole>} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/education-materials" element={
           <RequireRole><EducationMaterials /></RequireRole>
         } />
@@ -58,7 +65,6 @@ export default function App() {
           <RequireRole roles={['employee']}><EmployeeDashboard /></RequireRole>
         } />
 
-        <Route path="/coming-soon" element={<ComingSoon />} />
       </Routes>
     </BrowserRouter>
   );

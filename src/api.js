@@ -21,9 +21,18 @@ export function getRole() {
     if (!token) {
       return null;
     }
-    const middlePart = token.split('.')[1];
-    const info =JSON.parse(atob(middlePart.replace(/-/g, '+').replace(/_/g, '/')));
-    return info.role;
+    try {
+      const middlePart = token.split('.')[1];
+      const info = JSON.parse(atob(middlePart.replace(/-/g, '+').replace(/_/g, '/')));
+      if (info.exp && info.exp * 1000 < Date.now()) {
+        signOut();
+        return null;
+      }
+      return info.role || null;
+    } catch {
+      signOut();
+      return null;
+    }
   }
 //Talking to the backend
 export async function apiRequest(method, url, body) {
@@ -43,11 +52,16 @@ export async function apiRequest(method, url, body) {
     response = await fetch(url, options);
   }
   catch {
-    throw new Error('Could not reach the server. Is the backen (Main.java) running?')
+    throw new Error('Could not reach the server. Please try again later.');
   }
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : {};
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error('The server sent an unexpected response.');
+  }
 
   // If the backend sent an error, show its message
   if (!response.ok) {
