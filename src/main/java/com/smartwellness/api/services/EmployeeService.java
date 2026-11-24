@@ -229,6 +229,31 @@ public class EmployeeService {
             }
         }
     }
+    
+    // Revokes an unused Smart ID for the selected company.
+    // A redeemed Smart ID cannot be deleted.
+
+    public boolean revokeSignUpCode(int companyId, String code)
+            throws SQLException {
+
+        if (code == null || code.trim().isEmpty()) {
+            throw new IllegalArgumentException("Smart ID code is required");
+        }
+
+        String sql = "DELETE FROM smart_ids " +
+                     "WHERE code = ? AND company_id = ? AND is_redeemed = 0";
+
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+
+            ps.setString(1, code.trim());
+            ps.setInt(2, companyId);
+
+            int rowsDeleted = ps.executeUpdate();
+
+            return rowsDeleted > 0;
+        }
+    }
+
 
     // ---------- small helpers ----------
 
