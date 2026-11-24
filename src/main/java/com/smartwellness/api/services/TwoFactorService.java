@@ -27,6 +27,10 @@ public class TwoFactorService {
     public static final int CODE_MINUTES = 10;   // how long a code works
     public static final int MAX_ATTEMPTS = 5;    // wrong tries allowed
 
+    // Master switch: false = nobody is asked for a 6-digit code.
+    // Change to true to turn two-factor sign-in back on.
+    public static final boolean TWO_FACTOR_ON = false;
+
     private final Database db;
     private final SecureRandom random = new SecureRandom();
 
@@ -36,6 +40,9 @@ public class TwoFactorService {
 
     // Does this person need a code to sign in?
     public boolean isRequired(int userId) throws SQLException {
+        if (!TWO_FACTOR_ON) {
+            return false; // two-factor is switched off for everyone
+        }
         String sql = "SELECT users.role, companies.two_factor_enabled FROM users "
                 + "LEFT JOIN companies ON companies.id = users.company_id WHERE users.id = ?";
         try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
