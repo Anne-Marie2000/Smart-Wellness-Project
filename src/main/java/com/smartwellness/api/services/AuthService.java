@@ -245,7 +245,19 @@ public class AuthService {
             return rs.next(); // true if a row was found
         }
     }
-
+    // Sprint 3 (two-factor sign-in): makes the login token for a user once
+    // they have typed the right 6-digit code.
+    public String tokenForUser(int userId) throws SQLException, AuthException {
+        String sql = "SELECT role, company_id, is_active FROM users WHERE id = ?";
+        try (PreparedStatement ps = db.getConnection().prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next() || !rs.getBoolean("is_active")) {
+                throw new AuthException("This account is deactivated or no longer exists");
+            }
+            return issueToken(userId, rs.getString("role"), rs.getInt("company_id"));
+        }
+    }
     // Builds the login token that gets sent back to the frontend. The
     // frontend attaches this on every request after logging in so the
     // backend knows who's asking.
