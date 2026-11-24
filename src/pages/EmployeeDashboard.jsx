@@ -32,7 +32,7 @@ function EmployeeDashboard() {
         <section className="employee-heading">
           <p className="card-label">YOUR WELLNESS</p>
 
-          <h1>Hi {firstName} — glad you're here.</h1>
+          <h1>Hi {firstName}, glad you're here.</h1>
 
           <p>Today's a good day for something small and kind.</p>
 
