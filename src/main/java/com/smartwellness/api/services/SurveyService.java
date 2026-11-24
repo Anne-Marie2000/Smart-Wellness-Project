@@ -160,6 +160,18 @@ public class SurveyService {
         }
     }
 
+    // The id of every company. Used when a survey is sent to all companies.
+    public List<Integer> listCompanyIds() throws SQLException {
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement ps = db.getConnection().prepareStatement("SELECT id FROM companies ORDER BY id")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ids.add(rs.getInt("id"));
+            }
+        }
+        return ids;
+    }
+
     // Every survey on the platform (for the Smart Wellness Admin, who has no company)
     public JSONArray listAllSurveys() throws SQLException {
         String sql = "SELECT id, title, company_id, created_at FROM surveys ORDER BY created_at DESC";
