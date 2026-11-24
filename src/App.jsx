@@ -20,6 +20,7 @@ import SignIn from './pages/SignIn';
 import CompanyDashboard from './pages/CompanyDashboard';
 import LeaderDashboard from './pages/LeaderDashboard';
 import EmployeeDashboard from './pages/EmployeeDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   return (
@@ -63,6 +64,10 @@ export default function App() {
         } />
         <Route path="/employee-dashboard" element={
           <RequireRole roles={['employee']}><EmployeeDashboard /></RequireRole>
+        } />
+        {/* Sprint 3: system analytics for the Smart Wellness Admin (story #14) */}
+        <Route path="/admin-dashboard" element={
+          <RequireRole roles={['smart_wellness_admin']}><AdminDashboard /></RequireRole>
         } />
 
       </Routes>
