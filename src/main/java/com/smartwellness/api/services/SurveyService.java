@@ -285,4 +285,59 @@ public class SurveyService {
             return rs.getInt(1);
         }
     }
+    public void deleteSurvey(int surveyId) throws SQLException {
+    Connection conn = db.getConnection();
+    conn.setAutoCommit(false);
+
+    try {
+        // Delete the survey's anonymous answers
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM survey_answers WHERE survey_id = ?")) {
+            ps.setInt(1, surveyId);
+            ps.executeUpdate();
+        }
+
+        // Delete the completion records
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM survey_completions WHERE survey_id = ?")) {
+            ps.setInt(1, surveyId);
+            ps.executeUpdate();
+        }
+
+        // Delete any older response records
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM survey_responses WHERE survey_id = ?")) {
+            ps.setInt(1, surveyId);
+            ps.executeUpdate();
+        }
+
+        // Delete the survey questions
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM survey_questions WHERE survey_id = ?")) {
+            ps.setInt(1, surveyId);
+            ps.executeUpdate();
+        }
+
+        // Finally delete the survey itself
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM surveys WHERE id = ?")) {
+            ps.setInt(1, surveyId);
+
+            int rows = ps.executeUpdate();
+
+            if (rows == 0) {
+                throw new NoSuchElementException("Survey not found");
+            }
+        }
+
+        conn.commit();
+
+    } catch (Exception e) {
+        conn.rollback();
+        throw e;
+
+    } finally {
+        conn.setAutoCommit(true);
+    }
+}
 }
