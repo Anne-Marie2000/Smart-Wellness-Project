@@ -95,6 +95,8 @@ public class SurveysServlet extends ApiServlet {
 
     // Body: {"title": "...", "company_id": 1, "is_anonymous": true,
     //        "questions": [{"question_text": "...", "question_type": "rating"}]}
+    // Send "company_id": "all" to give the survey to every company. Each company
+    // gets its own copy, so results (and the 5-person rule) stay separate per company.
     private void createSurvey(HttpServletRequest req, HttpServletResponse resp, RequestAuth auth) throws Exception {
         JSONObject body = JsonUtil.readBody(req);
 
@@ -125,9 +127,23 @@ public class SurveysServlet extends ApiServlet {
             questions.add(new String[]{text, type});
         }
 
-        int surveyId = AppContext.surveys().createSurvey(title, body.getInt("company_id"), auth.userId,
-                body.optBoolean("is_anonymous", true), questions);
-        JsonUtil.send(resp, 201, new JSONObject().put("id", surveyId));
+        // Which companies get this survey: every company, or just one
+        List<Integer> companyIds = new ArrayList<>();
+        if (body.optString("company_id", "").equals("all")) {
+            companyIds = AppContext.surveys().listCompanyIds();
+            if (companyIds.isEmpty()) {
+                throw new IllegalArgumentException("There are no companies yet");
+            }
+        } else {
+            companyIds.add(body.getInt("company_id"));
+        }
+
+        // Make one copy of the survey for each company
+        boolean isAnonymous = body.optBoolean("is_anonymous", true);
+        for (int companyId : companyIds) {
+            AppContext.surveys().createSurvey(title, companyId, auth.userId, isAnonymous, questions);
+        }
+        JsonUtil.send(resp, 201, new JSONObject().put("companies", companyIds.size()));
     }
 
     // Body: {"responses": [{"question_id": 3, "answer": "4"}, ...]}
