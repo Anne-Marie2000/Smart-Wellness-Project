@@ -11,7 +11,8 @@ export default function Surveys() {
   const [answers, setAnswers] = useState({});
   const [title, setTitle] = useState('');
   const [companyId, setCompanyId] = useState('');
-  const [questions, setQuestions] = useState(['']);
+  // each question has its text and its type: 'rating' (1-5) or 'text' (a written comment)
+  const [questions, setQuestions] = useState([{ text: '', type: 'rating' }]);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -51,7 +52,7 @@ export default function Surveys() {
     setSaving(true);
     setError('');
     try {
-      const responses = selected.questions.map(q => ({ question_id: q.id, answer: answers[q.id] }));
+      const responses = selected.questions.map(q => ({ question_id: q.id, answer: answers[q.id] || '' }));
       await apiRequest('POST', `/api/surveys/${selected.id}/responses`, { responses });
       setSuccess('Your answers have been submitted. Thank you!');
       setSelected(null);
@@ -65,18 +66,18 @@ export default function Surveys() {
 
   async function createSurvey(e) {
     e.preventDefault();
-    const cleanQuestions = questions.map(q => q.trim()).filter(Boolean);
+    const cleanQuestions = questions.filter(q => q.text.trim() !== '');
     if (!cleanQuestions.length) return;
     setSaving(true);
     setError('');
     try {
       await apiRequest('POST', '/api/surveys', {
         title: title.trim(), company_id: Number(companyId), is_anonymous: true,
-        questions: cleanQuestions.map(text => ({ question_text: text, question_type: 'rating' }))
+        questions: cleanQuestions.map(q => ({ question_text: q.text.trim(), question_type: q.type }))
       });
       setTitle('');
       setCompanyId('');
-      setQuestions(['']);
+      setQuestions([{ text: '', type: 'rating' }]);
       setSuccess('Survey created.');
       await loadSurveys();
     } catch (err) {
@@ -84,6 +85,12 @@ export default function Surveys() {
     } finally {
       setSaving(false);
     }
+  }
+
+  // Change the text or the type of one question in the "Create a Survey" form
+  function updateQuestion(index, field, value) {
+    const updated = questions.map((q, i) => (i === index ? { ...q, [field]: value } : q));
+    setQuestions(updated);
   }
 
   async function showResults(id) {
@@ -124,10 +131,19 @@ export default function Surveys() {
         {selected && canAnswer && (
           <form className="wellness-form" onSubmit={submitAnswers}>
             <h2>{selected.title}</h2>
-            <p>Choose a rating from 1 (strongly disagree) to 5 (strongly agree).</p>
+            <p>Your answers are anonymous. For ratings, choose 1 (strongly disagree) to 5 (strongly agree).</p>
             {(selected.questions || []).map(question => (
               <fieldset className="survey-question" key={question.id}>
                 <legend>{question.question_text}</legend>
+
+                {/* Text question: a box to write a comment */}
+                {question.question_type === 'text' && (
+                  <textarea rows="4" required value={answers[question.id] || ''}
+                    onChange={e => setAnswers({ ...answers, [question.id]: e.target.value })} />
+                )}
+
+                {/* Rating question: buttons from 1 to 5 */}
+                {question.question_type !== 'text' && (
                 <div className="survey-options">
                   {[1, 2, 3, 4, 5].map(number => (
                     <label key={number}>
@@ -138,6 +154,7 @@ export default function Surveys() {
                     </label>
                   ))}
                 </div>
+                )}
               </fieldset>
             ))}
             <div className="wellness-form-buttons">
@@ -150,12 +167,15 @@ export default function Surveys() {
         {results && (
           <section className="wellness-form">
             <h2>{results.title || 'Survey Results'}</h2>
-            <p>Only grouped responses are shown, not individual employee answers.</p>
+            <p>{results.response_count} people answered. Only grouped responses are shown, not individual employee answers.</p>
             {(results.questions || []).map(question => (
               <div className="survey-result" key={question.id}>
                 <h3>{question.question_text}</h3>
                 {Object.entries(question.counts || {}).map(([answer, count]) => (
                   <p key={answer}>Rating {answer}: {count} response{count === 1 ? '' : 's'}</p>
+                ))}
+                {(question.comments || []).map((comment, index) => (
+                  <p key={index}>"{comment}"</p>
                 ))}
               </div>
             ))}
@@ -178,13 +198,18 @@ export default function Surveys() {
               {questions.map((question, index) => (
                 <div className="wellness-field wellness-full" key={index}>
                   <label htmlFor={`survey-question-${index}`}>Question {index + 1}</label>
-                  <input id={`survey-question-${index}`} value={question} required
-                    onChange={e => setQuestions(questions.map((q, i) => i === index ? e.target.value : q))} />
+                  <input id={`survey-question-${index}`} value={question.text} required
+                    onChange={e => updateQuestion(index, 'text', e.target.value)} />
+                  <select aria-label={`Question ${index + 1} type`} value={question.type}
+                    onChange={e => updateQuestion(index, 'type', e.target.value)}>
+                    <option value="rating">Rating (1 to 5)</option>
+                    <option value="text">Written comment</option>
+                  </select>
                 </div>
               ))}
             </div>
             <div className="wellness-form-buttons">
-              <button type="button" onClick={() => setQuestions([...questions, ''])}>Add Question</button>
+              <button type="button" onClick={() => setQuestions([...questions, { text: '', type: 'rating' }])}>Add Question</button>
               <button type="submit" disabled={saving}>{saving ? 'Creating...' : 'Create Survey'}</button>
             </div>
           </form>
