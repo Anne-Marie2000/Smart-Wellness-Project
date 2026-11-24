@@ -15,6 +15,11 @@ public class AppContext {
     private static EventService events;
     private static RoiService roi;
     private static ResourceService resources;
+    // Sprint 3
+    private static SurveyService surveys;
+    private static EngagementService engagement;
+    private static UsageService usage;
+    private static TwoFactorService twoFactor;
 
     public static void init(Database database, AuthService authService) {
         db = database;
@@ -24,6 +29,10 @@ public class AppContext {
         events = new EventService(database);
         roi = new RoiService(database);
         resources = new ResourceService(database);
+        surveys = new SurveyService(database);
+        engagement = new EngagementService(database);
+        usage = new UsageService(database);
+        twoFactor = new TwoFactorService(database);
     }
 
     public static Database db() { return db; }
@@ -33,4 +42,8 @@ public class AppContext {
     public static EventService events() { return events; }
     public static RoiService roi() { return roi; }
     public static ResourceService resources() { return resources; }
+    public static SurveyService surveys() { return surveys; }
+    public static EngagementService engagement() { return engagement; }
+    public static UsageService usage() { return usage; }
+    public static TwoFactorService twoFactor() { return twoFactor; }
 }
