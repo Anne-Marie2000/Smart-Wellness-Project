@@ -17,6 +17,8 @@ export default function Surveys() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [saving, setSaving] = useState(false);
+  // the list of companies, for the "Send to" dropdown (Smart Wellness Admin only)
+  const [companies, setCompanies] = useState([]);
 
   async function loadSurveys() {
     try {
@@ -32,7 +34,15 @@ export default function Surveys() {
     apiRequest('GET', '/api/surveys')
       .then(data => setSurveys(data.surveys || []))
       .catch(err => setError(err.message));
-  }, []);
+
+    // Smart Wellness Admins pick which company gets a new survey,
+    // so load the company names (the analytics list has them)
+    if (canCreate) {
+      apiRequest('GET', '/api/analytics')
+        .then(data => setCompanies(data.companies || []))
+        .catch(err => setError(err.message));
+    }
+  }, [canCreate]);
 
   async function openSurvey(id) {
     setError('');
@@ -72,13 +82,14 @@ export default function Surveys() {
     setError('');
     try {
       await apiRequest('POST', '/api/surveys', {
-        title: title.trim(), company_id: Number(companyId), is_anonymous: true,
+        // "all" sends the survey to every company; otherwise it is one company's id
+        title: title.trim(), company_id: companyId === 'all' ? 'all' : Number(companyId), is_anonymous: true,
         questions: cleanQuestions.map(q => ({ question_text: q.text.trim(), question_type: q.type }))
       });
       setTitle('');
       setCompanyId('');
       setQuestions([{ text: '', type: 'rating' }]);
-      setSuccess('Survey created.');
+      setSuccess(companyId === 'all' ? 'Survey sent to every company.' : 'Survey created.');
       await loadSurveys();
     } catch (err) {
       setError(err.message);
@@ -191,9 +202,15 @@ export default function Surveys() {
                 <input id="survey-title" value={title} required onChange={e => setTitle(e.target.value)} />
               </div>
               <div className="wellness-field">
-                <label htmlFor="survey-company">Company ID</label>
-                <input id="survey-company" type="number" min="1" value={companyId} required
-                  onChange={e => setCompanyId(e.target.value)} />
+                <label htmlFor="survey-company">Send to</label>
+                <select id="survey-company" value={companyId} required
+                  onChange={e => setCompanyId(e.target.value)}>
+                  <option value="">Choose a company...</option>
+                  <option value="all">All companies</option>
+                  {companies.map(company => (
+                    <option key={company.company_id} value={company.company_id}>{company.company_name}</option>
+                  ))}
+                </select>
               </div>
               {questions.map((question, index) => (
                 <div className="wellness-field wellness-full" key={index}>
