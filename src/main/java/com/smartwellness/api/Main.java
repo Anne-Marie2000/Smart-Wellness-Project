@@ -9,13 +9,8 @@ import org.eclipse.jetty.server.Server;
 
 // connects to MySQL (Database also creates any missing tables)
 //creates the services
-//connects AuthServlet to its web address
+//connects each servlet to its web address
 //starts the web server on http://localhost:8080
-
-// ***Need to work on!***
-//Main.java will use other files, no other files uses Main.java
-//Will talk to the Frontend, after implementing Code in the react pages that call the backend, the Vite proxy in vite.config.js,
-//more servlets such as (events, surveys, resources, SmartIDs), and role checks
 
 public class Main {
 
@@ -32,7 +27,7 @@ public class Main {
                 //gets the database password from Eclipse's settings so that the backend can log in to MySQL
                 required("DB_PASSWORD"));
 
-              // ---- create the services ----
+         // ---- create the services ----
         SmartIdService smartIdService = new SmartIdService(db);
         AuthService authService = new AuthService(db, smartIdService);
 
@@ -49,6 +44,11 @@ public class Main {
         context.addServlet(new ServletHolder(new BenefitsServlet()), "/api/benefits/*");
         context.addServlet(new ServletHolder(new ResourcesServlet()), "/api/resources/*");
         context.addServlet(new ServletHolder(new RoiServlet()), "/api/roi/*");
+        // Sprint 3
+        context.addServlet(new ServletHolder(new SurveysServlet()), "/api/surveys/*");
+        context.addServlet(new ServletHolder(new ReportsServlet()), "/api/reports/*");
+        context.addServlet(new ServletHolder(new AnalyticsServlet()), "/api/analytics/*");
+        context.addServlet(new ServletHolder(new TwoFactorServlet()), "/api/two-factor/*");
 
         // ---- start ----
         int port = Integer.parseInt(env("PORT", "8080"));
