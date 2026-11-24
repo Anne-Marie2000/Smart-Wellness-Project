@@ -32,6 +32,7 @@ public class Database {
 
         createTablesIfNeeded();
         createSprint2Tables();
+        createSprint3Tables();
     }
 
     public Connection getConnection() {
@@ -226,12 +227,77 @@ public class Database {
 
         statement.close();
 
-        // New columns on tables that already exist from Sprint 1.
         // CREATE TABLE IF NOT EXISTS won't add columns to an old table,
         // so we check first and only ALTER if the column is missing.
         addColumnIfMissing("users", "is_active", "TINYINT(1) NOT NULL DEFAULT 1");
         addColumnIfMissing("wellness_events", "status", "VARCHAR(20) NOT NULL DEFAULT 'active'");
         addColumnIfMissing("resources", "audience", "VARCHAR(20) NOT NULL DEFAULT 'all'");
+    }
+
+    // ---------------------------------------------------------------
+    // Sprint 3 additions
+    // ---------------------------------------------------------------
+    private void createSprint3Tables() throws SQLException {
+        Statement statement = connection.createStatement();
+
+        // One row every time someone uses the platform (for example, signs in).
+        // Used by the Smart Wellness Admin's system analytics.
+        statement.execute(
+            "CREATE TABLE IF NOT EXISTS usage_log (" +
+            " id INT PRIMARY KEY AUTO_INCREMENT," +
+            " user_id INT NOT NULL," +
+            " action VARCHAR(50) NOT NULL," + // for example: login
+            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+            " FOREIGN KEY (user_id) REFERENCES users(id)" +
+            ")"
+        );
+
+        // Fully anonymous surveys: WHO finished a survey and WHAT they answered
+        // are saved in two separate tables that can't be matched up.
+
+        // Who has finished each survey (no answers here). Stops people answering twice.
+        // No id and no time, and rows are kept in user order, not in the order
+        // people submitted, so this table can't be lined up with survey_answers.
+        statement.execute(
+            "CREATE TABLE IF NOT EXISTS survey_completions (" +
+            " survey_id INT NOT NULL," +
+            " user_id INT NOT NULL," +
+            " PRIMARY KEY (survey_id, user_id)," +
+            " FOREIGN KEY (survey_id) REFERENCES surveys(id)," +
+            " FOREIGN KEY (user_id) REFERENCES users(id)" +
+            ")"
+        );
+
+        // What was answered (no name, no user id, no time)
+        statement.execute(
+            "CREATE TABLE IF NOT EXISTS survey_answers (" +
+            " id INT PRIMARY KEY AUTO_INCREMENT," +
+            " survey_id INT NOT NULL," +
+            " question_id INT NOT NULL," +
+            " answer TEXT NOT NULL," +
+            " FOREIGN KEY (survey_id) REFERENCES surveys(id)," +
+            " FOREIGN KEY (question_id) REFERENCES survey_questions(id)" +
+            ")"
+        );
+
+        // Two-factor sign-in: one row for each 6-digit code we send.
+        // challenge_id is a long random text the browser keeps while the person types the code.
+        // The code itself is stored hashed, like a password.
+        statement.execute(
+            "CREATE TABLE IF NOT EXISTS two_factor_codes (" +
+            " id INT PRIMARY KEY AUTO_INCREMENT," +
+            " challenge_id VARCHAR(64) UNIQUE NOT NULL," +
+            " user_id INT NOT NULL," +
+            " code_hash VARCHAR(255) NOT NULL," +
+            " expires_at TIMESTAMP NOT NULL," +
+            " attempts INT NOT NULL DEFAULT 0," +  // wrong tries so far
+            " is_used TINYINT(1) NOT NULL DEFAULT 0," +
+            " created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+            " FOREIGN KEY (user_id) REFERENCES users(id)" +
+            ")"
+        );
+
+        statement.close();
     }
 
     private void addColumnIfMissing(String table, String column, String definition) throws SQLException {
