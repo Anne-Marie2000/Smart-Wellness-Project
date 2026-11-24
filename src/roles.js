@@ -34,11 +34,10 @@ export const ROLE_INFO = {
     showOnSignIn: true,
   },
 
-  // Wellness Admin Dashboard is not built yet, so it is hidden
-  // Smart Wellness Admins manage wellness events, so they can go to that page.
+  // Sprint 3: Smart Wellness Admins now have their own analytics dashboard
   [ROLES.SMART_WELLNESS_ADMIN]: {
     label: 'Smart Wellness Admin',
-    dashboard: '/wellness-events',
+    dashboard: '/admin-dashboard',
     showOnSignIn: false,
   },
 };
