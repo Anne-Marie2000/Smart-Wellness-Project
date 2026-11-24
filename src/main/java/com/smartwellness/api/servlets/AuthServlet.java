@@ -63,11 +63,28 @@ public class AuthServlet extends HttpServlet {
                 resp.getWriter().write(new JSONObject().put("smart_id", smartId).toString());
                 return;
             } else if ("/login".equals(path)) {
+                // Step 1: check the email, Smart ID and password
                 token = authService.login(
                     body.getString("email"),
                     body.optString("smart_id", ""), 
                     body.getString("password")
                 );
+
+                // Step 2 (Sprint 3): if two-factor sign-in is on, don't sign them in yet.
+                // Send a 6-digit code and give the browser a challenge id instead of the token.
+                int userId = authService.verifyToken(token).get("userId", Integer.class);
+                if (AppContext.twoFactor().isRequired(userId)) {
+                    String challengeId = AppContext.twoFactor().startChallenge(userId);
+                    resp.setStatus(200);
+                    resp.getWriter().write(new JSONObject()
+                        .put("two_factor_required", true)
+                        .put("challenge_id", challengeId)
+                        .put("message", "We sent you a 6-digit code. Type it in to finish signing in.")
+                        .toString());
+                    return;
+                }
+
+                recordLogin(token); // Sprint 3: for the system analytics
             } else {
                 resp.setStatus(404);
                 return;
@@ -103,6 +120,17 @@ public class AuthServlet extends HttpServlet {
         } catch (Exception e) {
             resp.setStatus(500);
             resp.getWriter().write(new JSONObject().put("error", "Something went wrong").toString());
+        }
+    }
+
+    // Sprint 3: save a "login" row for the system analytics (story #14).
+    // If saving fails we only print it - a broken log should never stop someone signing in.
+    private void recordLogin(String token) {
+        try {
+            int userId = authService.verifyToken(token).get("userId", Integer.class);
+            AppContext.usage().record(userId, "login");
+        } catch (Exception e) {
+            System.out.println("Could not record login: " + e.getMessage());
         }
     }
 
